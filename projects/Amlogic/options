@@ -75,7 +75,7 @@
     GOLD_SUPPORT="yes"
 
   # SquashFS compression method (gzip / lzo / xz)
-    SQUASHFS_COMPRESSION="lz4"
+    SQUASHFS_COMPRESSION="lzo"
 
 ################################################################################
 # setup project defaults
