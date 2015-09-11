@@ -89,3 +89,7 @@ else
   cmdline="$cmdline BOOT_IMAGE=/dev/boot boot=/dev/system disk=/dev/data"
 fi
 echo "$cmdline" > /proc/cmdline
+
+for part in /sys/block/*/queue/add_random; do
+  echo 0 > "$part"
+done
