@@ -1,0 +1,133 @@
+From 724aa2dadcba0cde6f6ac5a7bd434956dda98c21 Mon Sep 17 00:00:00 2001
+From: anaconda <anaconda@menakite.eu>
+Date: Thu, 11 Sep 2014 21:30:43 +0200
+Subject: [PATCH] Disable autoscrolling while on screensaver and while opening
+ streams.
+
+---
+ xbmc/Application.cpp                | 10 ++++++++++
+ xbmc/Application.h                  |  2 ++
+ xbmc/guilib/GUIFadeLabelControl.cpp |  4 +++-
+ xbmc/guilib/GUIFont.cpp             |  4 ++++
+ xbmc/guilib/GUILabel.cpp            |  4 +++-
+ xbmc/guilib/GUITextBox.cpp          |  3 ++-
+ 6 files changed, 24 insertions(+), 3 deletions(-)
+
+diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
+index 697f278..a2a7fd2 100644
+--- a/xbmc/Application.cpp
++++ b/xbmc/Application.cpp
+@@ -4996,3 +4996,13 @@ bool CApplication::NotifyActionListeners(const CAction &action) const
+   
+   return false;
+ }
++
++bool CApplication::ScreenSaverDisablesAutoScrolling()
++{
++  bool onBlackDimScreenSaver = IsInScreenSaver() && m_screenSaver &&
++    (m_screenSaver->ID() == "screensaver.xbmc.builtin.black" ||
++     m_screenSaver->ID() == "screensaver.xbmc.builtin.dim");
++  bool openingStreams = m_pPlayer->IsPlaying() && g_windowManager.IsWindowActive(WINDOW_DIALOG_BUSY);
++
++  return onBlackDimScreenSaver || openingStreams;
++}
+diff --git a/xbmc/Application.h b/xbmc/Application.h
+index 4b50ab2..07a5da2 100644
+--- a/xbmc/Application.h
++++ b/xbmc/Application.h
+@@ -389,6 +389,8 @@ class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMs
+    */
+   void UnregisterActionListener(IActionListener *listener);
+ 
++  bool ScreenSaverDisablesAutoScrolling();
++
+ protected:
+   virtual bool OnSettingsSaving() const;
+ 
+diff --git a/xbmc/guilib/GUIFadeLabelControl.cpp b/xbmc/guilib/GUIFadeLabelControl.cpp
+index 9eadbe4..b2b5f13 100644
+--- a/xbmc/guilib/GUIFadeLabelControl.cpp
++++ b/xbmc/guilib/GUIFadeLabelControl.cpp
+@@ -20,6 +20,8 @@
+ 
+ #include "GUIFadeLabelControl.h"
+ 
++#include "Application.h"
++
+ using namespace std;
+ 
+ CGUIFadeLabelControl::CGUIFadeLabelControl(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, bool scrollOut, unsigned int timeToDelayAtEnd, bool resetOnLabelChange)
+@@ -102,7 +104,7 @@ void CGUIFadeLabelControl::Process(unsigned int currentTime, CDirtyRegionList &d
+     m_lastLabel = m_currentLabel;
+   }
+ 
+-  if (m_infoLabels.size() > 1 || !m_shortText)
++  if ((m_infoLabels.size() > 1 || !m_shortText) && !g_application.ScreenSaverDisablesAutoScrolling())
+   { // have scrolling text
+     MarkDirtyRegion();
+ 
+diff --git a/xbmc/guilib/GUIFont.cpp b/xbmc/guilib/GUIFont.cpp
+index 7f11089..1192b74 100644
+--- a/xbmc/guilib/GUIFont.cpp
++++ b/xbmc/guilib/GUIFont.cpp
+@@ -22,6 +22,7 @@
+ #include "GUIFontTTF.h"
+ #include "GraphicContext.h"
+ 
++#include "Application.h"
+ #include "threads/SingleLock.h"
+ #include "utils/TimeUtils.h"
+ #include "utils/MathUtils.h"
+@@ -128,6 +129,9 @@ bool CGUIFont::UpdateScrollInfo(const vecText &text, CScrollInfo &scrollInfo)
+   //   If the string is smaller than the viewport, then it may be plotted even
+   //   more times than that.
+   //
++  if (g_application.ScreenSaverDisablesAutoScrolling())
++    return false;
++
+   if (scrollInfo.waitTime)
+   {
+     scrollInfo.waitTime--;
+diff --git a/xbmc/guilib/GUILabel.cpp b/xbmc/guilib/GUILabel.cpp
+index 759ac09..bed6ad2 100644
+--- a/xbmc/guilib/GUILabel.cpp
++++ b/xbmc/guilib/GUILabel.cpp
+@@ -21,6 +21,8 @@
+ #include "GUILabel.h"
+ #include <limits>
+ 
++#include "Application.h"
++
+ CGUILabel::CGUILabel(float posX, float posY, float width, float height, const CLabelInfo& labelInfo, CGUILabel::OVER_FLOW overflow)
+     : m_label(labelInfo)
+     , m_textLayout(labelInfo.font, overflow == OVER_FLOW_WRAP, height)
+@@ -104,7 +106,7 @@ void CGUILabel::Render()
+   color_t color = GetColor();
+   bool renderSolid = (m_color == COLOR_DISABLED);
+   bool overFlows = (m_renderRect.Width() + 0.5f < m_textLayout.GetTextWidth()); // 0.5f to deal with floating point rounding issues
+-  if (overFlows && m_scrolling && !renderSolid)
++  if (overFlows && m_scrolling && !renderSolid && !g_application.ScreenSaverDisablesAutoScrolling())
+     m_textLayout.RenderScrolling(m_renderRect.x1, m_renderRect.y1, m_label.angle, color, m_label.shadowColor, 0, m_renderRect.Width(), m_scrollInfo);
+   else
+   {
+diff --git a/xbmc/guilib/GUITextBox.cpp b/xbmc/guilib/GUITextBox.cpp
+index 0d5b3f7..6d23024 100644
+--- a/xbmc/guilib/GUITextBox.cpp
++++ b/xbmc/guilib/GUITextBox.cpp
+@@ -23,6 +23,7 @@
+ #include "utils/XBMCTinyXML.h"
+ #include "utils/MathUtils.h"
+ #include "utils/StringUtils.h"
++#include "Application.h"
+ 
+ #include <algorithm>
+ 
+@@ -134,7 +135,7 @@ void CGUITextBox::Process(unsigned int currentTime, CDirtyRegionList &dirtyregio
+   // update our auto-scrolling as necessary
+   if (m_autoScrollTime && m_lines.size() > m_itemsPerPage)
+   {
+-    if (!m_autoScrollCondition || m_autoScrollCondition->Get())
++    if ((!m_autoScrollCondition || m_autoScrollCondition->Get()) && !g_application.ScreenSaverDisablesAutoScrolling())
+     {
+       if (m_lastRenderTime)
+         m_autoScrollDelayTime += currentTime - m_lastRenderTime;
