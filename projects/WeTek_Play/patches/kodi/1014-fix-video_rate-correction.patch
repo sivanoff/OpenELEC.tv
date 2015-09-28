@@ -1,0 +1,22 @@
+From e0f5c8fb0076637933f57ec4dd56800b73063df7 Mon Sep 17 00:00:00 2001
+From: "Chris \"Koying\" Browet" <cbro@semperpax.com>
+Date: Sat, 12 Sep 2015 11:25:23 +0200
+Subject: [PATCH] FIX: [aml] fix video_rate correction
+
+---
+ xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
+index 97cf866..0d2e3ab 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
+@@ -1519,7 +1519,7 @@ bool CAMLCodec::OpenDecoder(CDVDStreamInfo &hints)
+   if (hints.width == 1920 && am_private->video_rate == 1920)
+   {
+     CLog::Log(LOGDEBUG, "CAMLCodec::OpenDecoder video_rate exception");
+-    am_private->video_rate = 0.5 + (float)UNIT_FREQ * 1001 / 25000;
++    am_private->video_rate = 0.5 + (float)UNIT_FREQ * 1000 / 25000;
+   }
+ 
+   // check for SD h264 content incorrectly reported as 60 fsp
