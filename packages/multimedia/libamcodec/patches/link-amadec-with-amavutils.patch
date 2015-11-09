@@ -1,0 +1,23 @@
+From 5e23a81b706f1748e5054d2cc60be92f84c0fb21 Mon Sep 17 00:00:00 2001
+From: Alex Deryskyba <alex@codesnake.com>
+Date: Tue, 10 Nov 2015 00:30:36 +0100
+Subject: [PATCH] amadec/Makefile: Link amadec with amavutils, otherwise
+ libamcodec will crash during an attempt to use audio decoding
+
+---
+ amadec/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/amadec/Makefile b/amadec/Makefile
+index b80a96d..4728ed3 100644
+--- a/amadec/Makefile
++++ b/amadec/Makefile
+@@ -7,7 +7,7 @@ TARGET_OBJS=adec-external-ctrl.o adec-internal-mgt.o adec-ffmpeg-mgt.o adec-mess
+ 
+ INSTALL_DIR=${M_PREFIX}/lib
+ 
+-LDFLAGS += -shared -lpthread -lm -lasound -lrt -ldl
++LDFLAGS += -shared -lpthread -lm -lasound -lrt -ldl -lamavutils
+ 
+ CFLAGS+=-O2 -fPIC
+ CFLAGS+=-I$(shell pwd) -I$(shell pwd)/include -I$(shell pwd)/../amavutils/include -I${PREFIX}/include -I${PREFIX}/usr/include -L${PREFIX}/lib -L${PREFIX}/usr/lib
