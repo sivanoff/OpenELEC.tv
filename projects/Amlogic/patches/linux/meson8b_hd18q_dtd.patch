@@ -926,16 +926,16 @@ index 0000000..ff4acd7
 +//$$ DEVICE="led"
 +//$$ L2 PROP_STR = "status"
 +//$$ L2 PROP_U32 = "board_type"
-+    led{
-+		compatible = "amlogic-led";
-+		dev_name = "aml-setio";
-+		status = "okay";
-+		red_led_gpio = "GPIOAO_13";/** if your board just need one gpio,please config red_led_gpio and blue_led_gpio the same */
-+		blue_led_gpio = "GPIOAO_2";/**  */
-+		red_led_mode = <1>; /** 1:H on L off , 0:H off L on */
-+		blue_led_mode= <1>; /** 1:H on L off , 0:H off L on */
++//    led{
++//		compatible = "amlogic-led";
++//		dev_name = "aml-setio";
++//		status = "okay";
++//		red_led_gpio = "GPIOAO_13";/** if your board just need one gpio,please config red_led_gpio and blue_led_gpio the same */
++//		blue_led_gpio = "GPIOAO_2";/**  */
++//		red_led_mode = <1>; /** 1:H on L off , 0:H off L on */
++//		blue_led_mode= <1>; /** 1:H on L off , 0:H off L on */
 +//		board_type = <1>;/** k200(0) GPOAO_14 H BLUE L RED; m201(1): GPOAO_2 blue led , GPIOAO_13 red led ,H on, L off */
-+	};
++//	};
 +
 +
 +/// ***************************************************************************************
