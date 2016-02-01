@@ -1,0 +1,10 @@
+[Unit]
+Description=Amlogic dummy WiFi module loader
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "if ! grep -q cfg80211 /proc/modules ; then /sbin/modprobe wifi_dummy ; fi"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=basic.target
