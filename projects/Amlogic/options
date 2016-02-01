@@ -18,7 +18,7 @@
         # arm1176jz-s arm1176jzf-s cortex-a8 cortex-a9 cortex-r4
         # cortex-r4f cortex-m3 cortex-m1 xscale iwmmxt iwmmxt2 ep9312.
         #
-        TARGET_CPU="cortex-a9"
+        TARGET_CPU="cortex-a5"
 
         # TARGET_FLOAT:
         # Specifies which floating-point ABI to use. Permissible values are:
@@ -31,7 +31,7 @@
         # fpa fpe2 fpe3 maverick vfp vfpv3 vfpv3-fp16 vfpv3-d16 vfpv3-d16-fp16
         # vfpv3xd vfpv3xd-fp16 neon neon-fp16 vfpv4 vfpv4-d16 fpv4-sp-d16
         # neon-vfpv4.
-        TARGET_FPU="neon-fp16"
+        TARGET_FPU="neon-vfpv4"
         ;;
     esac
 
@@ -88,7 +88,7 @@
     OPENGL="no"
 
   # OpenGL-ES implementation to use (no / bcm2835-driver / gpu-viv-bin-mx6q / opengl-meson6)
-    OPENGLES="opengl-meson6"
+    OPENGLES="opengl-meson8"
 
   # include uvesafb support (yes / no)
     UVESAFB_SUPPORT="no"
@@ -122,7 +122,7 @@
   # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
   # Space separated list is supported,
   # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
-    FIRMWARE="misc-firmware wlan-firmware dvb-firmware"
+    FIRMWARE="misc-firmware wlan-firmware dvb-firmware brcmfmac_sdio-firmware"
 
   # build and install ATV IR remote support (yes / no)
     ATVCLIENT_SUPPORT="no"
@@ -155,3 +155,6 @@
   # set the addon dirs
     ADDON_PATH="$ADDON_VERSION/WeTek_Play/$TARGET_ARCH"
     ADDON_URL="$ADDON_SERVER_URL/$ADDON_PATH"
+
+  # Hardware random number generator daemon
+    HW_RNG="yes"
