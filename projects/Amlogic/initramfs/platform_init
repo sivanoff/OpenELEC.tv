@@ -23,6 +23,9 @@ hdmimode=720p
 # Parse command line arguments
 for arg in $(cat /proc/cmdline); do
   case $arg in
+    hdmitx=*)
+      hdmitx="${arg#*=}"
+      ;;
     hdmimode=*)
       hdmimode="${arg#*=}"
       ;;
@@ -81,13 +84,20 @@ if [ -n "$scaling_max_freq" ]; then
   echo "$scaling_max_freq" > "$cpufreq/scaling_dflt_freq"
 fi
 
-# Add information where to run OpenELEC from
+# Add cmdline arguments if not passed by bootloader
 cmdline=$(cat /proc/cmdline)
+
+if [ -z "$hdmitx" ]; then
+  cmdline="$cmdline hdmitx=cecf"
+fi
+
+# Add information where to run OpenELEC from
 if [ -n "$bootfromsd" ]; then
   cmdline="$cmdline BOOT_IMAGE=kernel.img boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2"
 else
   cmdline="$cmdline BOOT_IMAGE=/dev/boot boot=/dev/system disk=/dev/data"
 fi
+
 echo "$cmdline" > /proc/cmdline
 
 for part in /sys/block/*/queue/add_random; do
