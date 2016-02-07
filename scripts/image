@@ -332,9 +332,9 @@ fi
           INSTALL_SRC_DIR="$PROJECT_DIR/$PROJECT/install"
         fi
 
-        if [ -f "$INSTALL_SRC_DIR/update-binary" -a -f "$INSTALL_SRC_DIR/updater-script-bootloader" ]; then
+        if [ -f "$INSTALL_SRC_DIR/update-binary" -a -f "$INSTALL_SRC_DIR/updater-script-uenv" ]; then
 
-          AML_PKG_DIR="$RELEASE_DIR/ampl-pkg-bootloader"
+          AML_PKG_DIR="$RELEASE_DIR/ampl-pkg-uenv"
 
           # create package directory
           mkdir -p "$AML_PKG_DIR"
@@ -343,7 +343,7 @@ fi
           META_INF_DIR="$AML_PKG_DIR/META-INF/com/google/android"
           mkdir -p "$META_INF_DIR"
           cp $INSTALL_SRC_DIR/update-binary $META_INF_DIR
-          cp $INSTALL_SRC_DIR/updater-script-bootloader $META_INF_DIR/updater-script
+          cp $INSTALL_SRC_DIR/updater-script-uenv $META_INF_DIR/updater-script
 
           # create the update package
           pushd "$AML_PKG_DIR" > /dev/null
@@ -353,7 +353,7 @@ fi
           echo "Signing the update package"
           mkdir -p sign
           SIGNAPK_DIR="$ROOT/tools/signapk"
-          java -Xmx1024m -jar $SIGNAPK_DIR/signapk.jar -w $SIGNAPK_DIR/testkey.x509.pem $SIGNAPK_DIR/testkey.pk8 update.zip $TARGET_IMG/$IMAGE_NAME-bootloader.zip
+          java -Xmx1024m -jar $SIGNAPK_DIR/signapk.jar -w $SIGNAPK_DIR/testkey.x509.pem $SIGNAPK_DIR/testkey.pk8 update.zip $TARGET_IMG/$IMAGE_NAME-uenv.zip
 
           popd > /dev/null
         fi
