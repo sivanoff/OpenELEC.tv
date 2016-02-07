@@ -323,7 +323,7 @@ fi
       tar cf $TARGET_IMG/$IMAGE_NAME.tar -C target $IMAGE_NAME
 
     # create bootloader uenv update package for Amlogic project
-      if [ "$1" = "mkimage" ]; then
+      if [ "$1" = "amlpkg" -o "$1" = "mkimage" ]; then
         echo "Creating Amlogic bootloader update package"
 
         if [ -n "$DEVICE" -a -d "$PROJECT_DIR/$PROJECT/devices/$DEVICE/install" ]; then
