@@ -334,7 +334,7 @@ fi
 
         if [ -f "$INSTALL_SRC_DIR/update-binary" -a -f "$INSTALL_SRC_DIR/updater-script-uenv" ]; then
 
-          AML_PKG_DIR="$RELEASE_DIR/ampl-pkg-uenv"
+          AML_PKG_DIR="$RELEASE_DIR/aml-pkg-uenv"
 
           # create package directory
           mkdir -p "$AML_PKG_DIR"
@@ -353,9 +353,27 @@ fi
           echo "Signing the update package"
           mkdir -p sign
           SIGNAPK_DIR="$ROOT/tools/signapk"
-          java -Xmx1024m -jar $SIGNAPK_DIR/signapk.jar -w $SIGNAPK_DIR/testkey.x509.pem $SIGNAPK_DIR/testkey.pk8 update.zip $TARGET_IMG/$IMAGE_NAME-uenv.zip
+          java -Xmx1024m -jar $SIGNAPK_DIR/signapk.jar -w $SIGNAPK_DIR/testkey.x509.pem $SIGNAPK_DIR/testkey.pk8 update.zip sign/$IMAGE_NAME-uenv-update.zip
+
+          # create the auto-install package
+          if [ -f "$INSTALL_SRC_DIR/files/recovery.img" ]; then
+            echo "Creating Amlogic uenv ZIP auto-install package"
+            pushd sign > /dev/null
+            echo --update_package=/sdcard/$IMAGE_NAME-uenv-update.zip > factory_update_param.aml
+            cp $INSTALL_SRC_DIR/files/recovery.img .
+
+            zip -q $TARGET_IMG/$IMAGE_NAME-uenv.zip *
+
+            popd > /dev/null
+          fi
+
+          # copy update package to target directory
+          cp sign/$IMAGE_NAME-uenv-update.zip $TARGET_IMG
 
           popd > /dev/null
+
+          # cleanup package dir
+          rm -rf $AML_PKG_DIR
         fi
       fi
 
@@ -420,6 +438,11 @@ fi
         mkdir -p "$META_INF_DIR"
         cp $INSTALL_SRC_DIR/update-binary $META_INF_DIR
         cp $INSTALL_SRC_DIR/updater-script $META_INF_DIR
+
+        # add uenv update script to updater-script
+        if [ -f "$INSTALL_SRC_DIR/updater-script-uenv" ]; then
+          cat $INSTALL_SRC_DIR/updater-script-uenv >> $META_INF_DIR/updater-script
+        fi
 
         # copy other files if any
         if [ -d "$INSTALL_SRC_DIR/files" ]; then

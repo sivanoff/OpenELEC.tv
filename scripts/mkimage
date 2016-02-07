@@ -216,10 +216,10 @@ elif [ -z "$BOOTLOADER" ]; then
 fi # bootloader
 
 # amlogic uenv update
-  if [ -f "$INSTALL_SRC_DIR/files/recovery.img" -a -f "$TARGET_IMG/$IMAGE_NAME-uenv.zip" ]; then
+  if [ -f "$INSTALL_SRC_DIR/files/recovery.img" -a -f "$TARGET_IMG/$IMAGE_NAME-uenv-update.zip" ]; then
     cp $INSTALL_SRC_DIR/files/recovery.img $OE_TMP
-    cp $TARGET_IMG/$IMAGE_NAME-uenv.zip $OE_TMP
-    echo --update_package=/sdcard/$IMAGE_NAME-uenv.zip > "$OE_TMP/factory_update_param.aml"
+    cp $TARGET_IMG/$IMAGE_NAME-uenv-update.zip $OE_TMP
+    echo --update_package=/sdcard/$IMAGE_NAME-uenv-update.zip > "$OE_TMP/factory_update_param.aml"
   fi
 
 # unmount part1
