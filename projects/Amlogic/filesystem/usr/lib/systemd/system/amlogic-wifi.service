@@ -1,9 +1,10 @@
 [Unit]
 Description=Amlogic dummy WiFi module loader
+After=systemd-udevd.service
 
 [Service]
 Type=oneshot
-ExecStart=/bin/sh -c "if ! grep -q cfg80211 /proc/modules ; then /sbin/modprobe wifi_dummy ; fi"
+ExecStart=/bin/sh -c "sleep 2; if ! grep -q cfg80211 /proc/modules ; then /sbin/modprobe wifi_dummy ; fi"
 RemainAfterExit=yes
 
 [Install]
