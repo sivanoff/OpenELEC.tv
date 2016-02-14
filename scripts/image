@@ -231,6 +231,19 @@ fi
     echo "injecting DeviceTreeBlobs to kernel..."
     perl $BUILD/linux-$(kernel_version)/scripts/mkknlimg $BUILD/linux-$(kernel_version)/arch/$KERNEL_ARCH/boot/$KERNEL_IMAGE $TARGET_IMG/$IMAGE_NAME.kernel
     echo "...done"
+  elif [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
+    echo "Building Amlogic DeviceTreeBlobs and injecting them to kernel..."
+    pushd "$BUILD/linux-$(kernel_version)" > /dev/null
+    rm -rf arch/arm/boot/dts/amlogic/*.dtb arch/arm/boot/dtb.img arch/arm/boot/boot.img
+    for extra_target in "$KERNEL_UBOOT_EXTRA_TARGET"; do
+      LDFLAGS="" make $extra_target > /dev/null
+    done
+    $ROOT/tools/dtbTool/dtbTool -o arch/arm/boot/dtb.img -p scripts/dtc/ arch/arm/boot/dts/amlogic/
+    mkbootimg --kernel arch/arm/boot/$KERNEL_IMAGE --ramdisk $ROOT/$BUILD/image/initramfs.cpio \
+      --second arch/arm/boot/dtb.img --output arch/arm/boot/boot.img
+    echo "...done"
+    popd > /dev/null
+    cp -PR $BUILD/linux-$(kernel_version)/arch/arm/boot/boot.img $TARGET_IMG/$IMAGE_NAME.kernel
   else
     cp -PR $BUILD/linux-$(kernel_version)/arch/$KERNEL_ARCH/boot/$KERNEL_IMAGE $TARGET_IMG/$IMAGE_NAME.kernel
   fi

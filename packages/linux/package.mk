@@ -142,20 +142,13 @@ make_target() {
     $SCRIPTS/install initramfs
   )
 
-  if [ "$BOOTLOADER" = "u-boot" -a -n "$KERNEL_UBOOT_EXTRA_TARGET" ]; then
+  if [ "$BOOTLOADER" = "u-boot" -a -n "$KERNEL_UBOOT_EXTRA_TARGET" -a -z "$BUILD_ANDROID_BOOTIMG" ]; then
     for extra_target in "$KERNEL_UBOOT_EXTRA_TARGET"; do
       LDFLAGS="" make $extra_target
     done
   fi
 
   LDFLAGS="" make $KERNEL_IMAGE $KERNEL_MAKE_EXTRACMD
-
-  if [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
-    LDFLAGS="" $ROOT/tools/dtbTool/dtbTool -o arch/arm/boot/dt.img -p scripts/dtc/ arch/arm/boot/dts/amlogic/
-    LDFLAGS="" mkbootimg --kernel arch/arm/boot/$KERNEL_IMAGE --ramdisk $ROOT/$BUILD/image/initramfs.cpio \
-      --second arch/arm/boot/dt.img --output arch/arm/boot/boot.img
-    mv -f arch/arm/boot/boot.img arch/arm/boot/$KERNEL_IMAGE
-  fi
 }
 
 makeinstall_target() {
