@@ -63,7 +63,7 @@
 ################################################################################
 
   # Build optimizations (size/normal)
-    OPTIMIZATIONS="normal"
+    OPTIMIZATIONS="size"
 
   # Project CFLAGS
     PROJECT_CFLAGS=""
