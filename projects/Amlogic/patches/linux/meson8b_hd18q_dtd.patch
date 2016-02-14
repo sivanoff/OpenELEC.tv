@@ -1,9 +1,9 @@
 diff --git a/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd b/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd
 new file mode 100644
-index 0000000..ff4acd7
+index 0000000..894cfe5
 --- /dev/null
 +++ b/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd
-@@ -0,0 +1,2109 @@
+@@ -0,0 +1,2110 @@
 +/dts-v1/;
 +/// ***************************************************************************************\n
 +//$$ PROJECT="meson8b"
@@ -93,7 +93,7 @@ index 0000000..ff4acd7
 +
 +        cma_0:region@0 {
 +           region_name = "cma_0";
-+           reg = <0 0x02a00000>;
++           reg = <0 0x01200000>;
 +           linux,contiguous-region;
 +        };
 +	};
@@ -166,7 +166,7 @@ index 0000000..ff4acd7
 +		dev_name = "mesonstream.0";
 +		status = "okay";
 +		reserve-memory = <0x02000000>; // 32M
-+		reserve-iomap = "true";
++		//reserve-iomap = "true";
 +	};
 +
 +/// ***************************************************************************************
@@ -179,9 +179,22 @@ index 0000000..ff4acd7
 +                compatible = "amlogic,vdec";
 +                dev_name = "vdec.0";
 +                status = "okay";
-+                reserve-memory = <0x04000000>; // 64M
-+                reserve-iomap = "true";
++								reserve-memory = <0x04000000>; // 64M
++//		reserve-iomap = "true";
 +        };
++///	-	picture decoder
++//$$ MODULE="picture decoder"
++//$$ DEVICE="picdec"
++//$$ L2 PROP_STR = "status"
++//$$ L3 PROP_U32 2 ="reg"
++    picdec{
++		compatible = "amlogic,picdec";
++		dev_name = "picdec";
++		status = "okay";
++                share-memory-name = "vdec0";
++                share-memory-offset = <0>;
++                share-memory-size = <0x04000000>; //64M
++	};
 +
 +/// ***************************************************************************************
 +///	-	DISP&MM-PostProcess
@@ -1298,9 +1311,10 @@ index 0000000..ff4acd7
 +		dev_name = "nand";
 +		status = "ok";
 +		reg = <0xd0048600 0x24>;
-+		pinctrl-names = "nand_rb_mod","nand_norb_mod";
-+		pinctrl-0 = <&nand_input_state &conf_nand_state &conf_nand_state1 &nand_base>;
-+		pinctrl-1 = <&nand_input_state &conf_nand_state &conf_nand_state1 &nand_base>;
++		pinctrl-names = "nand_rb_mod","nand_norb_mod", "nand_cs_pins_only";
++		pinctrl-0 = <&conf_nand_pulldown &conf_nand_pullup &all_nand_pins>;
++		pinctrl-1 = <&conf_nand_pulldown &conf_nand_pullup &all_nand_pins>;
++		pinctrl-2 = <&nand_cs_pins>;
 +		device_id = <0>;
 +		plat-names = "nandnormal";
 +		plat-num = <1>;
@@ -1547,10 +1561,15 @@ index 0000000..ff4acd7
 +        status = "okay";
 +    };
 +
-+//    crypto_device{
-+//       compatible = "amlogic,crypto-device";
-+//       dev_name = "crypto_device";
-+//    };
++    aml_aes{
++       compatible = "amlogic,aes";
++       dev_name = "aml_aes";
++    };
++
++    aml_tdes{
++       compatible = "amlogic,des,tdes";
++       dev_name = "aml_tdes";
++    };
 +
 +/// **************************************************************************************
 +/// -   GPIO
@@ -1594,50 +1613,45 @@ index 0000000..ff4acd7
 +			amlogic,setmask=<4 0x03c0>;
 +			amlogic,pins="GPIOX_16", "GPIOX_17", "GPIOX_18", "GPIOX_19";
 +		};
-+
-+//$$ MATCH "Nand_pin_0_match" = "&nand_input_state"
-+//$$ MATCH "Nand_pin_1_match" = "&nand_input_state"
-+//$$ L2 PROP_STR 18 = "amlogic,pins"
-+//$$ L2 PROP_U32 = "amlogic,enable-output"
-+		nand_input_state:nand_input{
-+			amlogic,pins = "BOOT_0","BOOT_1","BOOT_2","BOOT_3","BOOT_4",
-+						"BOOT_5","BOOT_6","BOOT_7","BOOT_12","BOOT_13",
-+						"BOOT_8","BOOT_9","BOOT_10","BOOT_11",
-+						"BOOT_14","BOOT_15","BOOT_16","BOOT_17";
-+			amlogic,enable-output=<1>;
-+		};
-+
-+//$$ MATCH "Nand_pin_0_match" = "&conf_nand_state"
-+//$$ MATCH "Nand_pin_1_match" = "&conf_nand_state"
++//$$ MATCH "Nand_pin_0_match" = "&conf_nand_pulldown"
++//$$ MATCH "Nand_pin_1_match" = "&conf_nand_pulldown"
 +//$$ L2 PROP_STR 9 = "amlogic,pins"
 +//$$ L2 PROP_U32 = "amlogic,pullup"
-+		conf_nand_state: conf_nand{
++		conf_nand_pulldown: conf_nand_pulldown{
 +			amlogic,pins = "BOOT_0","BOOT_1","BOOT_2","BOOT_3","BOOT_4",
 +						"BOOT_5","BOOT_6","BOOT_7","BOOT_15";
 +			amlogic,pullup=<0>;
 +			amlogic,pullupen=<1>;
 +		};
-+		conf_nand_state1: conf_nand1{
++		conf_nand_pullup: conf_nand_pullup{
 +			amlogic,pins = "BOOT_8", "BOOT_10";
 +			amlogic,pullup=<1>;
 +			amlogic,pullupen=<1>;
 +		};
-+//$$ MATCH "Nand_pin_0_match" = "&nand_base"
-+//$$ MATCH "Nand_pin_1_match" = "&nand_base"
++//$$ MATCH "Nand_pin_0_match" = "&all_nand_pins"
++//$$ MATCH "Nand_pin_1_match" = "&all_nand_pins"
 +//$$ L2 PROP_U32 2 = "amlogic,setmask"
 +//$$ L2 PROP_U32 3*2 = "amlogic,clrmask"
 +//$$ L2 PROP_STR 17 = "amlogic,pins"
-+		nand_base: nand{
++		all_nand_pins: all_nand_pins{
 +			amlogic,setmask=<2 0x7fe0000>;
 +			amlogic,clrmask=<	5 0xe
 +							6 0x3f000000
 +							4 0x7c000000>;
 +			amlogic,pins = "BOOT_0","BOOT_1","BOOT_2","BOOT_3","BOOT_4",
 +						"BOOT_5","BOOT_6","BOOT_7","BOOT_8","BOOT_9",
-+						"BOOT_10","BOOT_12","BOOT_13",
++						"BOOT_10","BOOT_11","BOOT_12","BOOT_13",
 +						"BOOT_14","BOOT_15","BOOT_16","BOOT_17";
++			amlogic,enable-output=<1>;
 +		};
 +		
++		nand_cs_pins: nand_cs{
++			amlogic,setmask=<2 0x3000000>;
++			amlogic,clrmask=<7 0x80000
++							6 0x80000000>;
++			amlogic,pins = "BOOT_8","BOOT_9";
++		};
++
 +//$$ MATCH "Card_pin_0_match" = "&sdhc_b_pins"
 +//$$ L2 PROP_U32 2 = "amlogic,setmask"
 +//$$ L2 PROP_U32 4 = "amlogic,clrmask"
@@ -1973,12 +1987,9 @@ index 0000000..ff4acd7
 +//$$ L2 PROP_U32 10 = "amlogic,clrmask"
 +//$$ L2 PROP_STR 6 = "amlogic,pins"
 +        audio_pins:audio_pin{
-+            amlogic,setmask=<10 0x78000008
-+                             1 0x80>;
-+            amlogic,clrmask=<10 0x80002000
-+                             1 0x10000
-+                             3 0x40000>;
-+            amlogic,pins = "GPIOAO_8","GPIOAO_9","GPIOAO_10","GPIOAO_11","GPIOY_3";
++            amlogic,setmask=<10 0x78000008>;
++            amlogic,clrmask=<10 0x80002000>;
++            amlogic,pins = "GPIOAO_8","GPIOAO_9","GPIOAO_10","GPIOAO_11","GPIOAO_13";
 +        };
 +
 +//$$ MATCH "Spi_pin_0_match" = "&aml_spi_nor_pins"
@@ -2036,16 +2047,6 @@ index 0000000..ff4acd7
 +		interruptnum = <40>;
 +		new_maclogic = <1>;
 +	};
-+        ethmac: ethernet@0xc9410000{
-+                compatible = "amlogic,meson8b-rmii-dwmac", "snps,dwmac";
-+                reg = <0xc9410000 0x10000
-+                       0xc1108108 0x4>;
-+                interrupts = <0 8 1>;
-+                interrupt-names = "macirq";
-+                clocks = "clk81";
-+                clock-names = "stmmaceth";
-+        };
-+
 +/// ***************************************************************************************
 +///	-	RNG
 +//$$ MODULE="RNG"
