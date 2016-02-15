@@ -28,7 +28,7 @@ ATTRS{vendor}=="0x02d0", ATTRS{device}=="0xa962", \
 
 ### Broadcom bcm4343a0 bluetooth device
 ATTRS{vendor}=="0x02d0", ATTRS{device}=="0xa9a6", \
-  ENV{brcm_device}="4343a0"
+  ENV{brcm_device}="bcm43438a0"
 
 ENV{brcm_device}=="?*", ACTION=="add", \
   TAG+="systemd", ENV{SYSTEMD_WANTS}+="brcmfmac_sdio-firmware-aml@$env{brcm_device}.service"
