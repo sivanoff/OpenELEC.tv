@@ -1,9 +1,9 @@
 diff --git a/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd b/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd
 new file mode 100644
-index 0000000..923ad4d
+index 0000000..0797b17
 --- /dev/null
 +++ b/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd
-@@ -0,0 +1,2014 @@
+@@ -0,0 +1,2007 @@
 +/dts-v1/;
 +/// ***************************************************************************************\n
 +//$$ PROJECT="meson8b"
@@ -85,7 +85,7 @@ index 0000000..923ad4d
 +	memory{
 +		device_type = "memory";
 +		aml_reserved_start = <0x06000000>; /**reserved memory start */
-+		aml_reserved_end = <0x05000000>;/**reserved memory end */
++		aml_reserved_end = <0x05000000>;/**reserved memory end : dtb start for uboot*/
 +		phys_offset = <0x00200000>;
 +		linux,total-memory = <0x3fe00000>;
 +        #address-cells = <1>;
@@ -93,7 +93,7 @@ index 0000000..923ad4d
 +
 +        cma_0:region@0 {
 +           region_name = "cma_0";
-+           reg = <0 0x01200000>;
++           reg = <0 0x02a00000>;
 +           linux,contiguous-region;
 +        };
 +	};
@@ -179,22 +179,9 @@ index 0000000..923ad4d
 +                compatible = "amlogic,vdec";
 +                dev_name = "vdec.0";
 +                status = "okay";
-+								reserve-memory = <0x04000000>; // 64M
-+		reserve-iomap = "true";
++                reserve-memory = <0x04000000>; // 64M
++                reserve-iomap = "true";
 +        };
-+///	-	picture decoder
-+//$$ MODULE="picture decoder"
-+//$$ DEVICE="picdec"
-+//$$ L2 PROP_STR = "status"
-+//$$ L3 PROP_U32 2 ="reg"
-+    picdec{
-+		compatible = "amlogic,picdec";
-+		dev_name = "picdec";
-+		status = "okay";
-+                share-memory-name = "vdec0";
-+                share-memory-offset = <0>;
-+                share-memory-size = <0x04000000>; //64M
-+	};
 +
 +/// ***************************************************************************************
 +///	-	DISP&MM-PostProcess
@@ -206,8 +193,7 @@ index 0000000..923ad4d
 +		compatible = "amlogic,ppmgr";
 +		dev_name = "ppmgr";
 +		status = "okay";
-+		reserve-memory = <0x01000000>;//16M
-+		reserve-iomap = "true";
++		reserve-memory = <0x01000000>; // 16M
 +	};
 +
 +/// ***************************************************************************************
@@ -439,13 +425,14 @@ index 0000000..923ad4d
 +//$$ DEVICE="wifi_power"
 +//$$ L2 PROP_STR = "status"
 +//$$ L2 PROP_STR = "power_gpio"
-+//	wifi_power{
-+//            compatible = "amlogic,wifi_power";
-+//            dev_name = "wifi_power";
-+//            status = "okay";
-+//            power_gpio = "GPIOAO_6";
-+//            power_gpio2 = "GPIOX_11";
-+//	};
++	wifi_power{
++            compatible = "amlogic,wifi_power";
++            dev_name = "wifi_power";
++            status = "okay";
++            power_gpio = "GPIOAO_6";
++            power_gpio2 = "GPIOX_11";
++	    valid = "high";
++	};
 +
 +/// ***************************************************************************************
 +///	-	MMC
@@ -577,7 +564,6 @@ index 0000000..923ad4d
 +    sdhc{
 +        compatible = "amlogic,aml_sdhc";
 +        dev_name = "aml_sdhc.0";
-+        status = "okay";
 +        reg = <0xc1108e00 0x3c>;
 +        pinctrl-names = "sdhc_sd_clk_cmd_pins", "sdhc_sd_all_pins", "sdhc_emmc_clk_cmd_pins", "sdhc_emmc_all_pins", "sdhc_sdio_clk_cmd_pins", "sdhc_sdio_all_pins";
 +        pinctrl-0 = <&sdhc_sd_clk_cmd_pins>;
@@ -639,11 +625,11 @@ index 0000000..923ad4d
 +            status = "okay";
 +            port = <5>;          /**0:sdio_a, 1:sdio_b, 2:sdio_c, 3:sdhc_a, 4:sdhc_b, 5:sdhc_c */
 +            pinname = "emmc";
-+            ocr_avail = <0x200000>;          /**VDD voltage 3.3 ~ 3.4 */
++            ocr_avail = <0x00200080>; // 3.3:0x200000, 1.8+3.3:0x00200080
 +            caps = "MMC_CAP_8_BIT_DATA","MMC_CAP_MMC_HIGHSPEED","MMC_CAP_SD_HIGHSPEED", "MMC_CAP_NONREMOVABLE","MMC_CAP_ERASE", "MMC_CAP_HW_RESET"; // MMC_CAP_NEEDS_POLL -- for detect, MMC_CAP_NONREMOVABLE -- for eMMC/TSD
-+            //caps2 = "MMC_CAP2_HS200_1_8V_SDR";
-+	        f_min = <300000>;
-+            f_max = <50000000>;
++            caps2 = "MMC_CAP2_HS200_1_8V_SDR";
++            f_min = <300000>;
++            f_max = <100000000>;
 +            max_req_size = <0x20000>;          /**128KB*/
 +            gpio_dat3 = "BOOT_3";
 +            card_type = <1>; /* 0:unknown, 1:mmc card(include eMMC), 2:sd card(include tSD), 3:sdio device(ie:sdio-wifi), 4:SD combo (IO+mem) card, 5:NON sdio device(means sd/mmc card), other:reserved */
@@ -659,17 +645,17 @@ index 0000000..923ad4d
 +//$$ L3 PROP_U32 = "f_max"
 +//$$ L3 PROP_U32 = "max_req_size"
 +//$$ L2 PROP_U32 = "card_type"
-+        // sdio{
-+        //     status = "okay";
-+        //     port = <3>;          /**0:sdio_a, 1:sdio_b, 2:sdio_c, 3:sdhc_a, 4:sdhc_b, 5:sdhc_c */
-+        //     pinname = "sdio";
-+        //     ocr_avail = <0x00200080>; // 3.3:0x200000, 1.8+3.3:0x00200080
-+        //     caps = "MMC_CAP_4_BIT_DATA","MMC_CAP_MMC_HIGHSPEED","MMC_CAP_SD_HIGHSPEED", "MMC_CAP_NONREMOVABLE", "MMC_CAP_UHS_SDR12","MMC_CAP_UHS_SDR25","MMC_CAP_UHS_SDR50","MMC_CAP_UHS_SDR104";
-+        //     f_min = <300000>;
-+        //     f_max = <100000000>;
-+        //     max_req_size = <0x20000>;          /**128KB*/
-+        //     card_type = <3>; /* 0:unknown, 1:mmc card(include eMMC), 2:sd card(include tSD), 3:sdio device(ie:sdio-wifi), 4:SD combo (IO+mem) card, 5:NON sdio device(means sd/mmc card), other:reserved */
-+        // };
++	     sdio{
++             status = "okay";
++             port = <3>;          /**0:sdio_a, 1:sdio_b, 2:sdio_c, 3:sdhc_a, 4:sdhc_b, 5:sdhc_c */
++             pinname = "sdio";
++             ocr_avail = <0x00200080>; // 3.3:0x200000, 1.8+3.3:0x00200080
++             caps = "MMC_CAP_4_BIT_DATA","MMC_CAP_MMC_HIGHSPEED","MMC_CAP_SD_HIGHSPEED", "MMC_CAP_NONREMOVABLE", "MMC_CAP_UHS_SDR12","MMC_CAP_UHS_SDR25","MMC_CAP_UHS_SDR50","MMC_CAP_UHS_SDR104";
++             f_min = <300000>;
++             f_max = <100000000>;
++             max_req_size = <0x20000>;          /**128KB*/
++             card_type = <3>; /* 0:unknown, 1:mmc card(include eMMC), 2:sd card(include tSD), 3:sdio device(ie:sdio-wifi), 4:SD combo (IO+mem) card, 5:NON sdio device(means sd/mmc card), other:reserved */
++         };
 +    };
 +
 +
@@ -789,11 +775,11 @@ index 0000000..923ad4d
 +            table_count = <13>;                                 /** must be correct count for dvfs_table */
 +            change-frequent-only;
 +            post-reduce;
-+			inc_threshold = <800000>;
++            inc_threshold = <800000>;
 +            dvfs_table  = <
 +            /* NOTE: frequent in this table must be ascending order */
 +            /* frequent(Khz)    min_uV      max_uV                  */
-+                  96000         860000      860000
++                /*  96000         860000      860000
 +                 192000         860000      860000
 +                 312000         860000      860000
 +                 408000         860000      860000
@@ -805,6 +791,19 @@ index 0000000..923ad4d
 +                1200000         970000      970000
 +                1320000        1100000     1100000
 +                1488000        1100000     1100000
++                1536000        1140000     1140000*/
++		96000          900000      900000
++                 192000         900000      900000
++                 312000         900000      900000
++                 408000         900000      900000
++                 504000         900000      900000
++                 600000         900000      900000
++                 720000         900000      900000
++                 816000         950000      950000
++                1008000         970000      970000
++                1200000        1030000     1030000
++                1320000        1120000     1120000
++                1488000        1130000     1130000
 +                1536000        1140000     1140000
 +            >;
 +        };
@@ -1301,10 +1300,9 @@ index 0000000..923ad4d
 +		dev_name = "nand";
 +		status = "ok";
 +		reg = <0xd0048600 0x24>;
-+		pinctrl-names = "nand_rb_mod","nand_norb_mod", "nand_cs_pins_only";
-+		pinctrl-0 = <&conf_nand_pulldown &conf_nand_pullup &all_nand_pins>;
-+		pinctrl-1 = <&conf_nand_pulldown &conf_nand_pullup &all_nand_pins>;
-+		pinctrl-2 = <&nand_cs_pins>;
++		pinctrl-names = "nand_rb_mod","nand_norb_mod";
++		pinctrl-0 = <&nand_input_state &conf_nand_state &nand_base>;
++		pinctrl-1 = <&nand_input_state &conf_nand_state &nand_base>;
 +		device_id = <0>;
 +		plat-names = "nandnormal";
 +		plat-num = <1>;
@@ -1551,15 +1549,10 @@ index 0000000..923ad4d
 +        status = "okay";
 +    };
 +
-+    aml_aes{
-+       compatible = "amlogic,aes";
-+       dev_name = "aml_aes";
-+    };
-+
-+    aml_tdes{
-+       compatible = "amlogic,des,tdes";
-+       dev_name = "aml_tdes";
-+    };
++//    crypto_device{
++//       compatible = "amlogic,crypto-device";
++//       dev_name = "crypto_device";
++//    };
 +
 +/// **************************************************************************************
 +/// -   GPIO
@@ -1603,45 +1596,45 @@ index 0000000..923ad4d
 +			amlogic,setmask=<4 0x03c0>;
 +			amlogic,pins="GPIOX_16", "GPIOX_17", "GPIOX_18", "GPIOX_19";
 +		};
-+//$$ MATCH "Nand_pin_0_match" = "&conf_nand_pulldown"
-+//$$ MATCH "Nand_pin_1_match" = "&conf_nand_pulldown"
++
++//$$ MATCH "Nand_pin_0_match" = "&nand_input_state"
++//$$ MATCH "Nand_pin_1_match" = "&nand_input_state"
++//$$ L2 PROP_STR 18 = "amlogic,pins"
++//$$ L2 PROP_U32 = "amlogic,enable-output"
++		nand_input_state:nand_input{
++			amlogic,pins = "BOOT_0","BOOT_1","BOOT_2","BOOT_3","BOOT_4",
++						"BOOT_5","BOOT_6","BOOT_7","BOOT_12","BOOT_13",
++						"BOOT_8","BOOT_9","BOOT_10","BOOT_11",
++						"BOOT_14","BOOT_15","BOOT_16","BOOT_17";
++			amlogic,enable-output=<1>;
++		};
++
++//$$ MATCH "Nand_pin_0_match" = "&conf_nand_state"
++//$$ MATCH "Nand_pin_1_match" = "&conf_nand_state"
 +//$$ L2 PROP_STR 9 = "amlogic,pins"
 +//$$ L2 PROP_U32 = "amlogic,pullup"
-+		conf_nand_pulldown: conf_nand_pulldown{
++		conf_nand_state: conf_nand{
 +			amlogic,pins = "BOOT_0","BOOT_1","BOOT_2","BOOT_3","BOOT_4",
 +						"BOOT_5","BOOT_6","BOOT_7","BOOT_15";
 +			amlogic,pullup=<0>;
-+			amlogic,pullupen=<1>;
 +		};
-+		conf_nand_pullup: conf_nand_pullup{
-+			amlogic,pins = "BOOT_8", "BOOT_10";
-+			amlogic,pullup=<1>;
-+			amlogic,pullupen=<1>;
-+		};
-+//$$ MATCH "Nand_pin_0_match" = "&all_nand_pins"
-+//$$ MATCH "Nand_pin_1_match" = "&all_nand_pins"
++
++//$$ MATCH "Nand_pin_0_match" = "&nand_base"
++//$$ MATCH "Nand_pin_1_match" = "&nand_base"
 +//$$ L2 PROP_U32 2 = "amlogic,setmask"
 +//$$ L2 PROP_U32 3*2 = "amlogic,clrmask"
 +//$$ L2 PROP_STR 17 = "amlogic,pins"
-+		all_nand_pins: all_nand_pins{
++		nand_base: nand{
 +			amlogic,setmask=<2 0x7fe0000>;
 +			amlogic,clrmask=<	5 0xe
 +							6 0x3f000000
 +							4 0x7c000000>;
 +			amlogic,pins = "BOOT_0","BOOT_1","BOOT_2","BOOT_3","BOOT_4",
 +						"BOOT_5","BOOT_6","BOOT_7","BOOT_8","BOOT_9",
-+						"BOOT_10","BOOT_11","BOOT_12","BOOT_13",
++						"BOOT_10","BOOT_12","BOOT_13",
 +						"BOOT_14","BOOT_15","BOOT_16","BOOT_17";
-+			amlogic,enable-output=<1>;
 +		};
 +		
-+		nand_cs_pins: nand_cs{
-+			amlogic,setmask=<2 0x3000000>;
-+			amlogic,clrmask=<7 0x80000
-+							6 0x80000000>;
-+			amlogic,pins = "BOOT_8","BOOT_9";
-+		};
-+
 +//$$ MATCH "Card_pin_0_match" = "&sdhc_b_pins"
 +//$$ L2 PROP_U32 2 = "amlogic,setmask"
 +//$$ L2 PROP_U32 4 = "amlogic,clrmask"
