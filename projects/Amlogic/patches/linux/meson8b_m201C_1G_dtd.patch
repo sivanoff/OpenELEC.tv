@@ -1,6 +1,6 @@
 diff --git a/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd b/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd
 new file mode 100644
-index 0000000..0797b17
+index 0000000..4f8598e
 --- /dev/null
 +++ b/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd
 @@ -0,0 +1,2007 @@
@@ -344,8 +344,8 @@ index 0000000..0797b17
 +		port_name = "uart_ao";
 +		status = "okay";
 +		dev_name = "uart_ao";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&ao_uart_pins>;
++//		pinctrl-names = "default";
++//		pinctrl-0 = <&ao_uart_pins>;
 +	};
 +
 +//$$ DEVICE="uart_0"
@@ -686,19 +686,19 @@ index 0000000..0797b17
 +//$$ L3 PROP_U32 2 ="reg"
 +//$$ L3 PROP_STR = "pinctrl-names"
 +//$$ L2 PROP_CHOICE "I2C_A_pin_match" = "pinctrl-0"
-+    i2c@c1108500{ /*I2C-A*/
-+		compatible = "amlogic,aml_i2c";
-+		dev_name = "i2c-A";
-+		status = "ok";
-+		reg = <0xc1108500 0x20>;
-+		device_id = <1>;
-+		pinctrl-names="default";
-+		pinctrl-0=<&a_i2c_master>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		use_pio = <0>;
-+		master_i2c_speed = <300000>;
-+	};
++//    i2c@c1108500{ /*I2C-A*/
++//		compatible = "amlogic,aml_i2c";
++//		dev_name = "i2c-A";
++//		status = "ok";
++//		reg = <0xc1108500 0x20>;
++//		device_id = <1>;
++//		pinctrl-names="default";
++//		pinctrl-0=<&a_i2c_master>;
++//		#address-cells = <1>;
++//		#size-cells = <0>;
++//		use_pio = <0>;
++//		master_i2c_speed = <300000>;
++//	};
 +
 +//$$ DEVICE="I2C_B"
 +//$$ L2 PROP_STR = "status"
@@ -1576,10 +1576,10 @@ index 0000000..0797b17
 +//$$ MATCH "uart_ao_pin_match" = "&ao_uart_pins"
 +//$$ L2 PROP_U32 2 = "amlogic,setmask"
 +//$$ L2 PROP_STR 2 = "amlogic,pins"
-+        ao_uart_pins:ao_uart{
-+			amlogic,setmask=<10 0x1800>;
-+			amlogic,pins="GPIOAO_0", "GPIOAO_1";
-+		};
++//        ao_uart_pins:ao_uart{
++//			amlogic,setmask=<10 0x1800>;
++//			amlogic,pins="GPIOAO_0", "GPIOAO_1";
++//		};
 +
 +//$$ MATCH "uart_0_pin_match" = "&a_uart_pins"
 +//$$ L2 PROP_U32 2 = "amlogic,setmask"

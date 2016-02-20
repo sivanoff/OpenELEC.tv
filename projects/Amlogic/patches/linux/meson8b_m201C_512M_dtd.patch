@@ -1,5 +1,5 @@
 diff --git a/arch/arm/boot/dts/amlogic/meson8b_m201C_512M.dtd b/arch/arm/boot/dts/amlogic/meson8b_m201C_512M.dtd
-index 91e2227..c49a118 100755
+index 91e2227..17e893c 100755
 --- a/arch/arm/boot/dts/amlogic/meson8b_m201C_512M.dtd
 +++ b/arch/arm/boot/dts/amlogic/meson8b_m201C_512M.dtd
 @@ -88,7 +88,7 @@ void root_func(){
@@ -56,6 +56,17 @@ index 91e2227..c49a118 100755
  ///	-	RTC
  //$$ MODULE="RTC"
  //$$ DEVICE="Rtc"
+@@ -339,8 +353,8 @@ void root_func(){
+ 		port_name = "uart_ao";
+ 		status = "okay";
+ 		dev_name = "uart_ao";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&ao_uart_pins>;
++//		pinctrl-names = "default";
++//		pinctrl-0 = <&ao_uart_pins>;
+ 	};
+ 
+ //$$ DEVICE="uart_0"
 @@ -420,13 +434,14 @@ void root_func(){
  //$$ DEVICE="wifi_power"
  //$$ L2 PROP_STR = "status"
@@ -131,6 +142,39 @@ index 91e2227..c49a118 100755
      };
  
  
+@@ -681,19 +695,19 @@ void root_func(){
+ //$$ L3 PROP_U32 2 ="reg"
+ //$$ L3 PROP_STR = "pinctrl-names"
+ //$$ L2 PROP_CHOICE "I2C_A_pin_match" = "pinctrl-0"
+-    i2c@c1108500{ /*I2C-A*/
+-		compatible = "amlogic,aml_i2c";
+-		dev_name = "i2c-A";
+-		status = "ok";
+-		reg = <0xc1108500 0x20>;
+-		device_id = <1>;
+-		pinctrl-names="default";
+-		pinctrl-0=<&a_i2c_master>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		use_pio = <0>;
+-		master_i2c_speed = <300000>;
+-	};
++//    i2c@c1108500{ /*I2C-A*/
++//		compatible = "amlogic,aml_i2c";
++//		dev_name = "i2c-A";
++//		status = "ok";
++//		reg = <0xc1108500 0x20>;
++//		device_id = <1>;
++//		pinctrl-names="default";
++//		pinctrl-0=<&a_i2c_master>;
++//		#address-cells = <1>;
++//		#size-cells = <0>;
++//		use_pio = <0>;
++//		master_i2c_speed = <300000>;
++//	};
+ 
+ //$$ DEVICE="I2C_B"
+ //$$ L2 PROP_STR = "status"
 @@ -770,11 +784,11 @@ void root_func(){
              table_count = <13>;                                 /** must be correct count for dvfs_table */
              change-frequent-only;
@@ -179,6 +223,21 @@ index 91e2227..c49a118 100755
  		device_id = <0>;
  		plat-names = "nandnormal";
  		plat-num = <1>;
+@@ -1564,10 +1590,10 @@ void root_func(){
+ //$$ MATCH "uart_ao_pin_match" = "&ao_uart_pins"
+ //$$ L2 PROP_U32 2 = "amlogic,setmask"
+ //$$ L2 PROP_STR 2 = "amlogic,pins"
+-        ao_uart_pins:ao_uart{
+-			amlogic,setmask=<10 0x1800>;
+-			amlogic,pins="GPIOAO_0", "GPIOAO_1";
+-		};
++//        ao_uart_pins:ao_uart{
++//			amlogic,setmask=<10 0x1800>;
++//			amlogic,pins="GPIOAO_0", "GPIOAO_1";
++//		};
+ 
+ //$$ MATCH "uart_0_pin_match" = "&a_uart_pins"
+ //$$ L2 PROP_U32 2 = "amlogic,setmask"
 @@ -1584,45 +1610,45 @@ void root_func(){
  			amlogic,setmask=<4 0x03c0>;
  			amlogic,pins="GPIOX_16", "GPIOX_17", "GPIOX_18", "GPIOX_19";
