@@ -87,8 +87,6 @@ fi
 # Add cmdline arguments if not passed by bootloader
 cmdline=$(cat /proc/cmdline)
 
-# Reset CEC
-echo 0x0 > /sys/class/amhdmitx/amhdmitx0/cec_config
 if [ -z "$hdmitx" ]; then
   cmdline="$cmdline hdmitx=cecf"
 fi
