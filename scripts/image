@@ -428,11 +428,6 @@ fi
         cp $INSTALL_SRC_DIR/update-binary $META_INF_DIR
         cp $INSTALL_SRC_DIR/updater-script $META_INF_DIR
 
-        # copy other files if any
-        if [ -d "$INSTALL_SRC_DIR/files" ]; then
-          cp -PR $INSTALL_SRC_DIR/files/* $AML_PKG_DIR
-        fi
-
         # create the update package
         pushd "$AML_PKG_DIR" > /dev/null
         zip -rq update.zip *
