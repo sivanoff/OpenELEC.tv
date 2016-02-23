@@ -274,20 +274,14 @@ dashes="==========================="
     exit 1
   fi
 
-  if [ -d $PROJECT_DIR/$PROJECT/devices/$DEVICE/linux ]; then
-    linux_config_dir="$PROJECT_DIR/$PROJECT/devices/$DEVICE/linux"
-  else
-    linux_config_dir="$PROJECT_DIR/$PROJECT/linux"
-  fi
-
-  if [ ! -f $linux_config_dir/linux.$TARGET_ARCH.conf ]; then
+  if [ ! -f $PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf ]; then
     check_arch="$check_arch\n $dashes$dashes$dashes"
     check_arch="$check_arch\n ERROR: Architecture not found, use a valid Architecture"
     check_arch="$check_arch\n for your project or create a new config"
     check_arch="$check_arch\n $dashes$dashes$dashes"
     check_arch="$check_arch\n\n Valid Architectures for your project: $PROJECT"
 
-    for arch in $linux_config_dir/linux/*.conf; do
+    for arch in $PROJECT_DIR/$PROJECT/linux/*.conf; do
       check_arch="$check_arch\n - $(basename $arch | cut -f2 -d".")"
     done
     echo -e $check_arch
