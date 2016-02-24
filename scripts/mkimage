@@ -216,18 +216,14 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
         mcopy "$dtb" ::/$(basename "$dtb")
       fi
     done
-
-elif [ -z "$BOOTLOADER" ]; then
-    echo "image: copying files to part1..."
-    cp $TARGET_IMG/$IMAGE_NAME.kernel "$OE_TMP/kernel.img"
-    cp $TARGET_IMG/$IMAGE_NAME.system "$OE_TMP/SYSTEM"
 fi # bootloader
 
 # amlogic uenv update
   if [ -f "$INSTALL_SRC_DIR/files/recovery.img" -a -f "$TARGET_IMG/$IMAGE_NAME-uenv-update.zip" ]; then
-    cp $INSTALL_SRC_DIR/files/recovery.img $OE_TMP
-    cp $TARGET_IMG/$IMAGE_NAME-uenv-update.zip $OE_TMP
+    mcopy $INSTALL_SRC_DIR/files/recovery.img ::
+    mcopy $TARGET_IMG/$IMAGE_NAME-uenv-update.zip ::
     echo --update_package=/sdcard/$IMAGE_NAME-uenv-update.zip > "$OE_TMP/factory_update_param.aml"
+    mcopy $OE_TMP/factory_update_param.aml ::
   fi
 
 # extract part2 from image to format and copy files
