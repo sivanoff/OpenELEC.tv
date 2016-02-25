@@ -46,6 +46,11 @@ done
 
 echo "$hdmimode" > /sys/class/display/mode
 
+# Force enable CEC if configuration parameter not present or empty
+if [ -z "$hdmitx" ]; then
+  echo 0xf > /sys/class/amhdmitx/amhdmitx0/cec_config
+fi
+
 # Enable framebuffer device
 echo 0 > /sys/class/graphics/fb0/blank
 
@@ -84,12 +89,7 @@ if [ -n "$scaling_max_freq" ]; then
   echo "$scaling_max_freq" > "$cpufreq/scaling_dflt_freq"
 fi
 
-# Add cmdline arguments if not passed by bootloader
 cmdline=$(cat /proc/cmdline)
-
-if [ -z "$hdmitx" ]; then
-  cmdline="$cmdline hdmitx=cecf"
-fi
 
 # Add information where to run OpenELEC from
 if [ -n "$bootfromsd" ]; then
