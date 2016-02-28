@@ -1,6 +1,6 @@
 diff --git a/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd b/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd
 new file mode 100644
-index 0000000..4f8598e
+index 0000000..1362113
 --- /dev/null
 +++ b/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd
 @@ -0,0 +1,2007 @@
@@ -93,7 +93,7 @@ index 0000000..4f8598e
 +
 +        cma_0:region@0 {
 +           region_name = "cma_0";
-+           reg = <0 0x02a00000>;
++           reg = <0 0x01200000>;
 +           linux,contiguous-region;
 +        };
 +	};
@@ -193,7 +193,7 @@ index 0000000..4f8598e
 +		compatible = "amlogic,ppmgr";
 +		dev_name = "ppmgr";
 +		status = "okay";
-+		reserve-memory = <0x01000000>; // 16M
++		reserve-memory = <0x02000000>; // 32M
 +	};
 +
 +/// ***************************************************************************************
@@ -294,7 +294,7 @@ index 0000000..4f8598e
 +        status = "ok";
 +        share-memory-name = "ppmgr0";
 +        share-memory-offset = <0>;
-+        share-memory-size = <0x01000000>; //16M
++        share-memory-size = <0x02000000>; //32M
 +    };
 +/// ***************************************************************************************
 +///	-	DISP&MM-Vout
@@ -1972,7 +1972,7 @@ index 0000000..4f8598e
 +        audio_pins:audio_pin{
 +            amlogic,setmask=<10 0x78000000>;
 +            amlogic,clrmask=<10 0x80002000>;
-+            amlogic,pins = "GPIOAO_8","GPIOAO_9","GPIOAO_10","GPIOAO_11","GPIOY_3";
++            amlogic,pins = "GPIOAO_8","GPIOAO_9","GPIOAO_10","GPIOAO_11";
 +        };
 +
 +//$$ MATCH "Spi_pin_0_match" = "&aml_spi_nor_pins"

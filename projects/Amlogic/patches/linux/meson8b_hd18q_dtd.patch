@@ -1,9 +1,9 @@
 diff --git a/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd b/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd
 new file mode 100644
-index 0000000..2ad98fd
+index 0000000..5f2b4b0
 --- /dev/null
 +++ b/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd
-@@ -0,0 +1,2100 @@
+@@ -0,0 +1,2099 @@
 +/dts-v1/;
 +/// ***************************************************************************************\n
 +//$$ PROJECT="meson8b"
@@ -93,7 +93,7 @@ index 0000000..2ad98fd
 +
 +        cma_0:region@0 {
 +           region_name = "cma_0";
-+           reg = <0 0x02a00000>;
++           reg = <0 0x01200000>;
 +           linux,contiguous-region;
 +        };
 +	};
@@ -193,7 +193,7 @@ index 0000000..2ad98fd
 +		compatible = "amlogic,ppmgr";
 +		dev_name = "ppmgr";
 +		status = "okay";
-+		reserve-memory = <0x01000000>; // 16M
++		reserve-memory = <0x02000000>; // 32M
 +	};
 +
 +/// ***************************************************************************************
@@ -294,7 +294,7 @@ index 0000000..2ad98fd
 +        status = "ok";
 +        share-memory-name = "ppmgr0";
 +        share-memory-offset = <0>;
-+        share-memory-size = <0x01000000>; //16M
++        share-memory-size = <0x02000000>; //32M
 +    };
 +/// ***************************************************************************************
 +///	-	DISP&MM-Vout
@@ -913,7 +913,9 @@ index 0000000..2ad98fd
 +			port-speed = <0>; /** 0: default, high, 1: full */
 +			port-config = <0>; /** 0: default */
 +			port-dma = <0>; /** 0: default, 1: single, 2: incr, 3: incr4, 4: incr8, 5: incr16, 6: disable*/
-+			port-id-mode = <0>; /** 0: hardware, 1: sw_host, 2: sw_slave*/
++			port-id-mode = <1>; /** 0: hardware, 1: sw_host, 2: sw_slave*/
++			host-only-core = <1>;
++			pmu-apply-power = <1>;
 +//			gpio-vbus-power = "GPIOZ_1";
 +			gpio-work-mask	= <1>; /**0: work on pulldown,1:work on pullup*/
 +			status = "okay";
@@ -1973,12 +1975,9 @@ index 0000000..2ad98fd
 +//$$ L2 PROP_U32 10 = "amlogic,clrmask"
 +//$$ L2 PROP_STR 6 = "amlogic,pins"
 +        audio_pins:audio_pin{
-+            amlogic,setmask=<10 0x78000008
-+                             1 0x80>;
-+            amlogic,clrmask=<10 0x80002000
-+                             1 0x10000
-+                             3 0x40000>;
-+            amlogic,pins = "GPIOAO_8","GPIOAO_9","GPIOAO_10","GPIOAO_11","GPIOY_3";
++            amlogic,setmask=<10 0x78000000>;
++            amlogic,clrmask=<10 0x80002000>;
++            amlogic,pins = "GPIOAO_8","GPIOAO_9","GPIOAO_10","GPIOAO_11";
 +        };
 +
 +//$$ MATCH "Spi_pin_0_match" = "&aml_spi_nor_pins"

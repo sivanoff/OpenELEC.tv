@@ -1,6 +1,6 @@
 diff --git a/arch/arm/boot/dts/amlogic/meson8b_mk808bplus.dtd b/arch/arm/boot/dts/amlogic/meson8b_mk808bplus.dtd
 new file mode 100644
-index 0000000..1792ba3
+index 0000000..da369f5
 --- /dev/null
 +++ b/arch/arm/boot/dts/amlogic/meson8b_mk808bplus.dtd
 @@ -0,0 +1,2101 @@
@@ -93,7 +93,7 @@ index 0000000..1792ba3
 +
 +        cma_0:region@0 {
 +           region_name = "cma_0";
-+           reg = <0 0x02a00000>;
++           reg = <0 0x01200000>;
 +           linux,contiguous-region;
 +        };
 +	};
@@ -193,7 +193,7 @@ index 0000000..1792ba3
 +		compatible = "amlogic,ppmgr";
 +		dev_name = "ppmgr";
 +		status = "okay";
-+		reserve-memory = <0x01000000>; // 16M
++		reserve-memory = <0x02000000>; // 32M
 +	};
 +
 +/// ***************************************************************************************
@@ -294,7 +294,7 @@ index 0000000..1792ba3
 +        status = "ok";
 +        share-memory-name = "ppmgr0";
 +        share-memory-offset = <0>;
-+        share-memory-size = <0x01000000>; //16M
++        share-memory-size = <0x02000000>; //32M
 +    };
 +/// ***************************************************************************************
 +///	-	DISP&MM-Vout
