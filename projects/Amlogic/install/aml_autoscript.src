@@ -1,3 +1,3 @@
-setenv bootcmd "if mmcinfo; then if fatload mmc 0 ${loadaddr} kernel.img; then setenv bootargs ${bootargs} bootfromsd; bootm; fi; fi; run storeboot"
+setenv bootcmd 'if mmcinfo; then if fatload mmc 0 ${loadaddr} kernel.img; then setenv bootargs ${bootargs} bootfromsd; bootm; fi; fi; run storeboot'
 setenv cecconfig cecf
 saveenv
