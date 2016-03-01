@@ -258,11 +258,11 @@ fi
 
 # gzip
   echo "image: compressing..."
-  gzip $DISK
+  7za a -sdel $DISK.xz $DISK > /dev/null
 
 # set owner
   if [ -n "$SUDO_USER" ] ; then
-    chown $SUDO_USER: $DISK.gz
+    chown $SUDO_USER: $DISK.xz
   fi
 
 # cleanup
