@@ -74,8 +74,11 @@
   # GOLD (Google Linker) support
     GOLD_SUPPORT="yes"
 
-  # SquashFS compression method (gzip / lzo / xz)
-    SQUASHFS_COMPRESSION="lzo"
+  # SquashFS compression method (gzip / lzo / xz / lz4)
+    SQUASHFS_COMPRESSION="lz4"
+
+  # SquashFS block size (default: 131072)
+    SQUASHFS_BLOCK_SIZE="16384"
 
 ################################################################################
 # setup project defaults
