@@ -1,9 +1,9 @@
 diff --git a/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd b/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd
 new file mode 100644
-index 0000000..3c7c4a0
+index 0000000..7f7f047
 --- /dev/null
 +++ b/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd
-@@ -0,0 +1,2104 @@
+@@ -0,0 +1,2107 @@
 +/dts-v1/;
 +/// ***************************************************************************************\n
 +//$$ PROJECT="meson8b"
@@ -772,6 +772,9 @@ index 0000000..3c7c4a0
 +        vcck_dvfs {
 +            dvfs_id     = <1>;                                  /** must be value of (1 << n)            */
 +            table_count = <13>;                                 /** must be correct count for dvfs_table */
++            change-frequent-only;
++            post-reduce;
++            inc_threshold = <800000>;
 +            dvfs_table  = <
 +            /* NOTE: frequent in this table must be ascending order */
 +            /* frequent(Khz)    min_uV      max_uV                  */
@@ -801,7 +804,7 @@ index 0000000..3c7c4a0
 +	meson_vcck_dvfs_driver{
 +        compatible = "amlogic, meson_vcck_dvfs";
 +        dev_name = "meson_vcck_dvfs_driver";
-+        status = "ok";
++        status = "disable";
 +        pinctrl-names = "default";
 +        pinctrl-0 = <&aml_pwm_pins>;
 +        use_pwm = <1>;
