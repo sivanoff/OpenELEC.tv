@@ -1,9 +1,9 @@
 diff --git a/arch/arm/boot/dts/amlogic/meson8b_mk808bplus.dtd b/arch/arm/boot/dts/amlogic/meson8b_mk808bplus.dtd
 new file mode 100644
-index 0000000..da369f5
+index 0000000..a2243c9
 --- /dev/null
 +++ b/arch/arm/boot/dts/amlogic/meson8b_mk808bplus.dtd
-@@ -0,0 +1,2101 @@
+@@ -0,0 +1,2106 @@
 +/dts-v1/;
 +/// ***************************************************************************************\n
 +//$$ PROJECT="meson8b"
@@ -1545,10 +1545,15 @@ index 0000000..da369f5
 +        status = "okay";
 +    };
 +
-+//    crypto_device{
-+//       compatible = "amlogic,crypto-device";
-+//       dev_name = "crypto_device";
-+//    };
++    aml_aes{
++       compatible = "amlogic,aes";
++       dev_name = "aml_aes";
++    };
++
++    aml_tdes{
++       compatible = "amlogic,des,tdes";
++       dev_name = "aml_tdes";
++    };
 +
 +/// **************************************************************************************
 +/// -   GPIO
