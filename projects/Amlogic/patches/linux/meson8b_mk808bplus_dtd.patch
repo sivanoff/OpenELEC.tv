@@ -1,9 +1,9 @@
 diff --git a/arch/arm/boot/dts/amlogic/meson8b_mk808bplus.dtd b/arch/arm/boot/dts/amlogic/meson8b_mk808bplus.dtd
 new file mode 100644
-index 0000000..a2243c9
+index 0000000..312ef93
 --- /dev/null
 +++ b/arch/arm/boot/dts/amlogic/meson8b_mk808bplus.dtd
-@@ -0,0 +1,2106 @@
+@@ -0,0 +1,2117 @@
 +/dts-v1/;
 +/// ***************************************************************************************\n
 +//$$ PROJECT="meson8b"
@@ -1544,6 +1544,17 @@ index 0000000..a2243c9
 +        syspll_fixed;
 +        status = "okay";
 +    };
++
++	amlogic-watchdog{
++		compatible = "amlogic,aml-wdt";
++		status = "disable";
++		default_timeout=<10>;
++		reset_watchdog_method=<1>;//0:sysfs,1:kernel
++		reset_watchdog_time=<2>;
++		shutdown_timeout=<10>;
++		firmware_timeout=<6>;
++		suspend_timeout=<6>;
++	};
 +
 +    aml_aes{
 +       compatible = "amlogic,aes";
