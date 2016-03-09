@@ -1,9 +1,9 @@
 diff --git a/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd b/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd
 new file mode 100644
-index 0000000..91bf9ee
+index 0000000..22e5cd8
 --- /dev/null
 +++ b/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd
-@@ -0,0 +1,2118 @@
+@@ -0,0 +1,2116 @@
 +/dts-v1/;
 +/// ***************************************************************************************\n
 +//$$ PROJECT="meson8b"
@@ -2043,17 +2043,15 @@ index 0000000..91bf9ee
 +	};
 +/// ***************************************************************************************
 +///	-	Ethernet
-+//$$ MODULE="Ethernet"
-+//$$ DEVICE="meson-eth"
-+//$$ L2 PROP_STR = "status"
-+    meson-eth{
-+		compatible = "amlogic,meson-eth";
-+		dev_name = "meson-eth";
-+		status = "okay";
-+		ethbaseaddr = <0xfe0c0000>;
-+		interruptnum = <40>;
-+		new_maclogic = <1>;
-+	};
++        ethmac: ethernet@0xc9410000{
++                compatible = "amlogic,meson8b-rmii-dwmac", "snps,dwmac";
++                reg = <0xc9410000 0x10000
++                       0xc1108108 0x4>;
++                interrupts = <0 8 1>;
++                interrupt-names = "macirq";
++                clocks = "clk81";
++                clock-names = "stmmaceth";
++        };
 +
 +/// ***************************************************************************************
 +///	-	RNG
