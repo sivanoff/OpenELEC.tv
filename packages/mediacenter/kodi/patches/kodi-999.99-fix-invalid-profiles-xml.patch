@@ -1,0 +1,26 @@
+From 045ae06b02fe99481436858764db2a13b382531f Mon Sep 17 00:00:00 2001
+From: Kolja Lampe <razzeee@gmail.com>
+Date: Sat, 19 Sep 2015 13:24:31 +0200
+Subject: [PATCH] Check if charsetSetting is null before trying to get data
+ from it. If it is use the default value.
+
+---
+ xbmc/LangInfo.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xbmc/LangInfo.cpp b/xbmc/LangInfo.cpp
+index c0c7034..b821d8a 100644
+--- a/xbmc/LangInfo.cpp
++++ b/xbmc/LangInfo.cpp
+@@ -570,7 +570,7 @@ void CLangInfo::SetDefaults()
+ std::string CLangInfo::GetGuiCharSet() const
+ {
+   CSettingString* charsetSetting = static_cast<CSettingString*>(CSettings::Get().GetSetting("locale.charset"));
+-  if (charsetSetting->IsDefault())
++  if (charsetSetting == NULL || charsetSetting->IsDefault())
+     return m_strGuiCharSet;
+ 
+   return charsetSetting->GetValue();
+-- 
+1.8.3.1
+
