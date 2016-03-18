@@ -19,6 +19,6 @@ unmount("/system");
 
 show_progress(0.300000, 60);
 
-set_bootloader_env("upgrade_step", "1");
+set_bootloader_env("upgrade_step", "2");
 show_progress(0.100000, 0);
 ui_print("OpenELEC Installed Successfully");
