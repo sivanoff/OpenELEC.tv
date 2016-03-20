@@ -161,3 +161,6 @@
 
   # Hardware random number generator daemon
     HW_RNG="yes"
+
+  # OEM packages for OEM's (yes / no)
+    OEM_SUPPORT="yes"
