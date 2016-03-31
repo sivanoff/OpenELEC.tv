@@ -2,7 +2,7 @@ diff --git a/README.md b/README.md
 index dfaf4d6..0dffdcf 100644
 --- a/README.md
 +++ b/README.md
-@@ -93,6 +93,12 @@ To compile in support for Exynos devices, you have to pass the argument -DHAVE_E
+@@ -58,6 +58,12 @@
  cmake -DHAVE_EXYNOS_API=1 ..
  ```
  
@@ -12,7 +12,7 @@ index dfaf4d6..0dffdcf 100644
 +cmake -DHAVE_AMLOGIC_API=1 ..
 +```
 +
- ### TDA995x
+ ## TDA995x ##
  To compile in support for TDA995x devices, you have to pass the argument -DHAVE_TDA995X_API=1 to cmake:
  ```
 diff --git a/include/cectypes.h b/include/cectypes.h
@@ -223,10 +223,10 @@ index 0000000..5aeddda
 +
 +#include "CECTypeUtils.h"
 +#include "LibCEC.h"
-+#include <p8-platform/util/buffer.h>
++#include <platform/util/buffer.h>
 +
 +using namespace CEC;
-+using namespace P8PLATFORM;
++using namespace PLATFORM;
 +
 +#define LIB_CEC m_callback->GetLib()
 +
@@ -528,14 +528,14 @@ index 0000000..0e99cf8
 +
 +#if defined(HAVE_AMLOGIC_API)
 +
-+#include <p8-platform/threads/mutex.h>
-+#include <p8-platform/threads/threads.h>
++#include <platform/threads/mutex.h>
++#include <platform/threads/threads.h>
 +#include "../AdapterCommunication.h"
 +#include <map>
 +
 +namespace CEC
 +{
-+  class CAmlogicCECAdapterCommunication : public IAdapterCommunication, public P8PLATFORM::CThread
++  class CAmlogicCECAdapterCommunication : public IAdapterCommunication, public PLATFORM::CThread
 +  {
 +  public:
 +    /*!
@@ -575,7 +575,7 @@ index 0000000..0e99cf8
 +    void SetActiveSource(bool UNUSED(bSetTo), bool UNUSED(bClientUnregistered)) {}
 +    ///}
 +
-+    /** @name P8PLATFORM::CThread implementation */
++    /** @name PLATFORM::CThread implementation */
 +    ///{
 +    void *Process(void);
 +    ///}
@@ -588,7 +588,7 @@ index 0000000..0e99cf8
 +
 +    bool                        m_bLogicalAddressChanged;
 +    cec_logical_addresses       m_logicalAddresses;
-+    P8PLATFORM::CMutex	        m_mutex;
++    PLATFORM::CMutex	        m_mutex;
 +    int                         m_fd;
 +  };
 +};
@@ -705,14 +705,14 @@ diff --git a/src/libcec/cmake/CheckPlatformSupport.cmake b/src/libcec/cmake/Chec
 index dc5bc25..64003d9 100644
 --- a/src/libcec/cmake/CheckPlatformSupport.cmake
 +++ b/src/libcec/cmake/CheckPlatformSupport.cmake
-@@ -10,6 +10,7 @@
- #       HAVE_IMX_API              1 if i.MX is supported
- #       HAVE_TDA995X_API          1 if TDA995X is supported
- #       HAVE_EXYNOS_API           1 if Exynos is supported
-+#       HAVE_AMLOGIC_API          1 if Amlogic is supported
- #       HAVE_P8_USB               1 if Pulse-Eight devices are supported
+@@ -11,6 +11,7 @@
+ #	HAVE_IMX_API              1 if i.MX is supported
+ #	HAVE_TDA995X_API          1 if TDA995X is supported
+ #	HAVE_EXYNOS_API           1 if Exynos is supported
++#	HAVE_AMLOGIC_API          1 if Amlogic is supported
  #       HAVE_P8_USB_DETECT        1 if Pulse-Eight devices can be auto-detected
- #       HAVE_DRM_EDID_PARSER      1 if DRM EDID parsing is supported
+ #
+ 
 @@ -142,6 +143,18 @@ else()
    else()
      set(HAVE_EXYNOS_API 0)
