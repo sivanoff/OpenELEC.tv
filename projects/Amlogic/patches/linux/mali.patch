@@ -1,0 +1,604 @@
+diff -NaurZ linux-amlogic-3.10-cf51189/drivers/gpu/drm/Kconfig linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/Kconfig
+--- linux-amlogic-3.10-cf51189/drivers/gpu/drm/Kconfig	2016-03-17 14:47:20.000000000 +0300
++++ linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/Kconfig	2016-04-02 21:35:38.879367000 +0300
+@@ -199,6 +199,13 @@
+ 	  Choose this option if you have a Savage3D/4/SuperSavage/Pro/Twister
+ 	  chipset. If M is selected the module will be called savage.
+ 
++config DRM_MALI
++	tristate "arm mali cards"
++	depends on DRM
++	help
++	  Choose this option if you have a ARM GPU Mali.
++	  If M is selected the module will be called arm.
++
+ source "drivers/gpu/drm/exynos/Kconfig"
+ 
+ source "drivers/gpu/drm/vmwgfx/Kconfig"
+diff -NaurZ linux-amlogic-3.10-cf51189/drivers/gpu/drm/Makefile linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/Makefile
+--- linux-amlogic-3.10-cf51189/drivers/gpu/drm/Makefile	2016-03-17 14:47:20.000000000 +0300
++++ linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/Makefile	2016-04-02 21:32:52.239367000 +0300
+@@ -41,6 +41,7 @@
+ obj-$(CONFIG_DRM_CIRRUS_QEMU) += cirrus/
+ obj-$(CONFIG_DRM_SIS)   += sis/
+ obj-$(CONFIG_DRM_SAVAGE)+= savage/
++obj-$(CONFIG_DRM_MALI)  += mali_drm/
+ obj-$(CONFIG_DRM_VMWGFX)+= vmwgfx/
+ obj-$(CONFIG_DRM_VIA)	+=via/
+ obj-$(CONFIG_DRM_NOUVEAU) +=nouveau/
+diff -NaurZ linux-amlogic-3.10-cf51189/drivers/gpu/drm/mali_drm/include/Kbuild linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/mali_drm/include/Kbuild
+--- linux-amlogic-3.10-cf51189/drivers/gpu/drm/mali_drm/include/Kbuild	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/mali_drm/include/Kbuild	2016-04-02 21:31:57.959367000 +0300
+@@ -0,0 +1,11 @@
++unifdef-y += drm.h drm_sarea.h
++unifdef-y += i810_drm.h
++unifdef-y += i830_drm.h
++unifdef-y += i915_drm.h
++unifdef-y += mga_drm.h
++unifdef-y += r128_drm.h
++unifdef-y += radeon_drm.h
++unifdef-y += sis_drm.h
++unifdef-y += savage_drm.h
++unifdef-y += via_drm.h
++unifdef-y += mali_drm.h
+diff -NaurZ linux-amlogic-3.10-cf51189/drivers/gpu/drm/mali_drm/include/mali_drm.h linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/mali_drm/include/mali_drm.h
+--- linux-amlogic-3.10-cf51189/drivers/gpu/drm/mali_drm/include/mali_drm.h	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/mali_drm/include/mali_drm.h	2016-04-02 21:31:57.959367000 +0300
+@@ -0,0 +1,43 @@
++/*
++ * Copyright (C) 2010, 2012 ARM Limited. All rights reserved.
++ * 
++ * This program is free software and is provided to you under the terms of the GNU General Public License version 2
++ * as published by the Free Software Foundation, and any use by you of this program is subject to the terms of such GNU licence.
++ * 
++ * A copy of the licence is included with the program, and can also be obtained from Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
++ */
++
++#ifndef __MALI_DRM_H__
++#define __MALI_DRM_H__
++
++/* Mali specific ioctls */
++#define NOT_USED_0_3
++#define DRM_MALI_FB_ALLOC	0x04
++#define DRM_MALI_FB_FREE	        0x05
++#define NOT_USED_6_12
++#define DRM_MALI_MEM_INIT	0x13
++#define DRM_MALI_MEM_ALLOC	0x14
++#define DRM_MALI_MEM_FREE	0x15
++#define DRM_MALI_FB_INIT	        0x16
++
++#define DRM_IOCTL_MALI_FB_ALLOC		DRM_IOWR(DRM_COMMAND_BASE + DRM_MALI_FB_ALLOC, drm_mali_mem_t)
++#define DRM_IOCTL_MALI_FB_FREE		DRM_IOW( DRM_COMMAND_BASE + DRM_MALI_FB_FREE, drm_mali_mem_t)
++#define DRM_IOCTL_MALI_MEM_INIT		DRM_IOWR(DRM_COMMAND_BASE + DRM_MALI_MEM_INIT, drm_mali_mem_t)
++#define DRM_IOCTL_MALI_MEM_ALLOC		DRM_IOWR(DRM_COMMAND_BASE + DRM_MALI_MEM_ALLOC, drm_mali_mem_t)
++#define DRM_IOCTL_MALI_MEM_FREE		DRM_IOW( DRM_COMMAND_BASE + DRM_MALI_MEM_FREE, drm_mali_mem_t)
++#define DRM_IOCTL_MALI_FB_INIT		DRM_IOW( DRM_COMMAND_BASE + DRM_MALI_FB_INIT, drm_mali_fb_t)
++
++typedef struct 
++{
++	int context;
++	unsigned int offset;
++	unsigned int size;
++	unsigned long free;
++} drm_mali_mem_t;
++
++typedef struct {
++	unsigned int offset, size;
++} drm_mali_fb_t;
++
++#endif /* __MALI_DRM_H__ */
+diff -NaurZ linux-amlogic-3.10-cf51189/drivers/gpu/drm/mali_drm/Makefile linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/mali_drm/Makefile
+--- linux-amlogic-3.10-cf51189/drivers/gpu/drm/mali_drm/Makefile	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/mali_drm/Makefile	2016-04-02 21:31:57.959367000 +0300
+@@ -0,0 +1,19 @@
++#
++# Copyright (C) 2010, 2012 ARM Limited. All rights reserved.
++# 
++# This program is free software and is provided to you under the terms of the GNU General Public License version 2
++# as published by the Free Software Foundation, and any use by you of this program is subject to the terms of such GNU licence.
++# 
++# A copy of the licence is included with the program, and can also be obtained from Free Software
++# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
++#
++#
++# Makefile for the drm device driver.  This driver provides support for the
++# Direct Rendering Infrastructure (DRI) in XFree86 4.1.0 and higher.
++
++ccflags-y = -Iinclude/drm
++mali_drm-y := mali_drv.o
++
++obj-$(CONFIG_DRM_MALI)   += mali_drm.o
++
++
+diff -NaurZ linux-amlogic-3.10-cf51189/drivers/gpu/drm/mali_drm/mali_drv.c linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/mali_drm/mali_drv.c
+--- linux-amlogic-3.10-cf51189/drivers/gpu/drm/mali_drm/mali_drv.c	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/mali_drm/mali_drv.c	2016-04-02 21:31:57.969367000 +0300
+@@ -0,0 +1,188 @@
++/*
++ * Copyright (C) 2010, 2012 ARM Limited. All rights reserved.
++ * 
++ * This program is free software and is provided to you under the terms of the GNU General Public License version 2
++ * as published by the Free Software Foundation, and any use by you of this program is subject to the terms of such GNU licence.
++ * 
++ * A copy of the licence is included with the program, and can also be obtained from Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
++ */
++
++/**
++ * @file mali_drv.c
++ * Implementation of the Linux device driver entrypoints for Mali DRM
++ */
++#include <linux/module.h>
++#include <linux/vermagic.h>
++#include <linux/version.h>
++#include <drm/drmP.h>
++#include "include/mali_drm.h"
++#include "mali_drv.h"
++
++static struct platform_device *dev0;
++static struct platform_device *dev1;
++
++void mali_drm_preclose(struct drm_device *dev, struct drm_file *file_priv)
++{
++}
++
++void mali_drm_lastclose(struct drm_device *dev)
++{
++}
++
++static int mali_drm_suspend(struct drm_device *dev, pm_message_t state)
++{
++	return 0;
++}
++
++static int mali_drm_resume(struct drm_device *dev)
++{
++	return 0;
++}
++
++static int mali_drm_load(struct drm_device *dev, unsigned long chipset)
++{
++	return 0;
++}
++
++static int mali_drm_unload(struct drm_device *dev)
++{
++	return 0;
++}
++
++static struct file_operations mali_fops = {
++	 .owner = THIS_MODULE,
++	 .open = drm_open,
++	 .release = drm_release,
++	 .unlocked_ioctl = drm_ioctl,
++	 .mmap = drm_mmap,
++	 .poll = drm_poll,
++	 .fasync = drm_fasync,
++};
++
++static struct drm_driver driver = 
++{
++	.driver_features = DRIVER_BUS_PLATFORM,
++	.load = mali_drm_load,
++	.unload = mali_drm_unload,
++	.context_dtor = NULL,
++	.preclose = mali_drm_preclose,
++	.lastclose = mali_drm_lastclose,
++	.suspend = mali_drm_suspend,
++	.resume = mali_drm_resume,
++	.ioctls = NULL,
++	.fops = &mali_fops,
++	.name = DRIVER_NAME,
++	.desc = DRIVER_DESC,
++	.date = DRIVER_DATE,
++	.major = DRIVER_MAJOR,
++	.minor = DRIVER_MINOR,
++	.patchlevel = DRIVER_PATCHLEVEL,
++};
++
++static struct drm_driver driver1 = 
++{
++	.driver_features = DRIVER_BUS_PLATFORM,
++	.load = mali_drm_load,
++	.unload = mali_drm_unload,
++	.context_dtor = NULL,
++	.preclose = mali_drm_preclose,
++	.lastclose = mali_drm_lastclose,
++	.suspend = mali_drm_suspend,
++	.resume = mali_drm_resume,
++	.ioctls = NULL,
++	.fops = &mali_fops,
++	.name = DRIVER_NAME,
++	.desc = DRIVER_DESC,
++	.date = DRIVER_DATE,
++	.major = DRIVER_MAJOR,
++	.minor = DRIVER_MINOR,
++	.patchlevel = DRIVER_PATCHLEVEL,
++};
++
++int mali_drm_init(struct platform_device *dev)
++{
++	printk(KERN_INFO "Mali DRM initialize, driver name: %s, version %d.%d\n", DRIVER_NAME, DRIVER_MAJOR, DRIVER_MINOR);
++	if (dev == dev0) {
++		driver.num_ioctls = 0;
++		driver.kdriver.platform_device = dev;
++		return drm_platform_init(&driver, dev);
++	} else if (dev == dev1) {
++		driver1.num_ioctls = 0;
++		driver1.kdriver.platform_device = dev;
++		return drm_platform_init(&driver1, dev);
++	}
++	return 0;
++}
++
++void mali_drm_exit(struct platform_device *dev)
++{
++	if (driver.kdriver.platform_device == dev) {
++		drm_platform_exit(&driver, dev);
++	} else if (driver1.kdriver.platform_device == dev) {
++		drm_platform_exit(&driver1, dev);
++	}
++}
++
++static int mali_platform_drm_probe(struct platform_device *pdev)
++{
++	return mali_drm_init(pdev);
++}
++
++static int mali_platform_drm_remove(struct platform_device *pdev)
++{
++	mali_drm_exit(pdev);
++	return 0;
++}
++
++static int mali_platform_drm_suspend(struct platform_device *pdev, pm_message_t state)
++{
++	return 0;
++}
++
++static int mali_platform_drm_resume(struct platform_device *pdev)
++{
++	return 0;
++}
++
++
++
++static struct platform_driver platform_drm_driver = {
++	.probe = mali_platform_drm_probe,
++	.remove = mali_platform_drm_remove,
++	.suspend = mali_platform_drm_suspend,
++	.resume = mali_platform_drm_resume,
++	.driver = {
++		.owner = THIS_MODULE,
++		.name = DRIVER_NAME,
++	},
++};
++
++
++static int __init mali_platform_drm_init(void)
++{
++	dev0 = platform_device_register_simple("mali_drm", 0, NULL, 0);
++	dev1 = platform_device_register_simple("mali_drm", 1, NULL, 0);
++	return platform_driver_register( &platform_drm_driver );
++}
++
++static void __exit mali_platform_drm_exit(void)
++{
++	platform_driver_unregister( &platform_drm_driver );
++	platform_device_unregister(dev0);
++	platform_device_unregister(dev1);
++}
++
++#ifdef MODULE
++module_init(mali_platform_drm_init);
++#else
++late_initcall(mali_platform_drm_init);
++#endif
++module_exit(mali_platform_drm_exit);
++
++MODULE_DESCRIPTION(DRIVER_DESC);
++MODULE_VERSION(DRIVER_VERSION);
++MODULE_AUTHOR(DRIVER_AUTHOR);
++MODULE_LICENSE(DRIVER_LICENSE);
++MODULE_ALIAS(DRIVER_ALIAS);
++MODULE_INFO(vermagic, VERMAGIC_STRING);
+diff -NaurZ linux-amlogic-3.10-cf51189/drivers/gpu/drm/mali_drm/mali_drv.h linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/mali_drm/mali_drv.h
+--- linux-amlogic-3.10-cf51189/drivers/gpu/drm/mali_drm/mali_drv.h	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/mali_drm/mali_drv.h	2016-04-02 21:31:57.969367000 +0300
+@@ -0,0 +1,25 @@
++/*
++ * Copyright (C) 2010, 2012 ARM Limited. All rights reserved.
++ * 
++ * This program is free software and is provided to you under the terms of the GNU General Public License version 2
++ * as published by the Free Software Foundation, and any use by you of this program is subject to the terms of such GNU licence.
++ * 
++ * A copy of the licence is included with the program, and can also be obtained from Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
++ */
++
++#ifndef _MALI_DRV_H_
++#define _MALI_DRV_H_
++
++#define DRIVER_AUTHOR	"ARM Ltd."
++#define DRIVER_NAME		"mali_drm"
++#define DRIVER_DESC		"DRM module for Mali-200, Mali-400"
++#define DRIVER_LICENSE  "GPL v2"
++#define DRIVER_ALIAS    "platform:mali_drm"
++#define DRIVER_DATE		"20140306"
++#define DRIVER_VERSION  "0.2"
++#define DRIVER_MAJOR 2
++#define DRIVER_MINOR		1
++#define DRIVER_PATCHLEVEL 1
++
++#endif /* _MALI_DRV_H_ */
+diff -NaurZ linux-amlogic-3.10-cf51189/drivers/gpu/drm/mali_drm/mali_mm.c linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/mali_drm/mali_mm.c
+--- linux-amlogic-3.10-cf51189/drivers/gpu/drm/mali_drm/mali_mm.c	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-3.10-cf51189-mali/drivers/gpu/drm/mali_drm/mali_mm.c	2016-04-02 21:31:57.969367000 +0300
+@@ -0,0 +1,266 @@
++/*
++ * Copyright (C) 2010, 2012 ARM Limited. All rights reserved.
++ * 
++ * This program is free software and is provided to you under the terms of the GNU General Public License version 2
++ * as published by the Free Software Foundation, and any use by you of this program is subject to the terms of such GNU licence.
++ * 
++ * A copy of the licence is included with the program, and can also be obtained from Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
++ */
++
++#include <drm/drmP.h>
++#include "../include/mali_drm.h"
++#include "mali_drv.h"
++
++#define VIDEO_TYPE 0
++#define MEM_TYPE 1
++
++#define MALI_MM_ALIGN_SHIFT 4
++#define MALI_MM_ALIGN_MASK ( (1 << MALI_MM_ALIGN_SHIFT) - 1)
++
++#define DRM_IOCTL_DEF(ioctl, _func, _flags) \
++	[DRM_IOCTL_NR(ioctl)] = {.cmd = ioctl, .func = _func, .flags = _flags, .cmd_drv = 0}
++
++static void *mali_sman_mm_allocate( void *private, unsigned long size, unsigned alignment )
++{
++	printk(KERN_ERR "DRM: %s\n", __func__);
++	//struct mali_memreq req;
++
++	//req.size = size;
++	/* XXX _ump_ukk_allocate( _ump_uk_allocate_s *user_interaction ); */
++	//if (req.size == 0) return NULL;
++	//else return (void *)(unsigned long)~req.offset;
++	return NULL;
++}
++
++static void mali_sman_mm_free( void *private, void *ref )
++{
++	printk(KERN_ERR "DRM: %s\n", __func__);
++	/*ump_free(~((unsigned long)ref));*/
++
++}
++
++static void mali_sman_mm_destroy( void *private )
++{
++	printk(KERN_ERR "DRM: %s\n", __func__);
++}
++
++static unsigned long mali_sman_mm_offset( void *private, void *ref )
++{
++	printk(KERN_ERR "DRM: %s\n", __func__);
++	return ~((unsigned long)ref);
++}
++
++static int mali_fb_init( struct drm_device *dev, void *data, struct drm_file *file_priv )
++{
++	drm_mali_private_t *dev_priv = dev->dev_private;
++	drm_mali_fb_t *fb = data;
++	int ret;
++	printk(KERN_ERR "DRM: %s\n", __func__);
++
++	mutex_lock(&dev->struct_mutex);
++	{
++		struct drm_sman_mm sman_mm;
++		sman_mm.private = (void *)0xFFFFFFFF;
++		sman_mm.allocate = mali_sman_mm_allocate;
++		sman_mm.free = mali_sman_mm_free;
++		sman_mm.destroy = mali_sman_mm_destroy;
++		sman_mm.offset = mali_sman_mm_offset;
++		ret = drm_sman_set_manager(&dev_priv->sman, VIDEO_TYPE, &sman_mm);
++	}
++
++	if (ret) {
++		DRM_ERROR("VRAM memory manager initialisation error\n");
++		mutex_unlock(&dev->struct_mutex);
++		return ret;
++	}
++
++	dev_priv->vram_initialized = 1;
++	dev_priv->vram_offset = fb->offset;
++
++	mutex_unlock(&dev->struct_mutex);
++	DRM_DEBUG("offset = %u, size = %u\n", fb->offset, fb->size);
++
++	return 0;
++}
++
++static int mali_drm_alloc(struct drm_device *dev, struct drm_file *file_priv, void *data, int pool)
++{
++	drm_mali_private_t *dev_priv = dev->dev_private;
++	drm_mali_mem_t *mem = data;
++	int retval = 0;
++	struct drm_memblock_item *item;
++	printk(KERN_ERR "DRM: %s\n", __func__);
++
++	mutex_lock(&dev->struct_mutex);
++
++	if (0 == dev_priv->vram_initialized )
++	{
++		DRM_ERROR("Attempt to allocate from uninitialized memory manager.\n");
++		mutex_unlock(&dev->struct_mutex);
++		return -EINVAL;
++	}
++
++	mem->size = (mem->size + MALI_MM_ALIGN_MASK) >> MALI_MM_ALIGN_SHIFT;
++	item = drm_sman_alloc(&dev_priv->sman, pool, mem->size, 0,
++			      (unsigned long)file_priv);
++
++	mutex_unlock(&dev->struct_mutex);
++	if (item) 
++	{
++		mem->offset = dev_priv->vram_offset + (item->mm->offset(item->mm, item->mm_info) << MALI_MM_ALIGN_SHIFT);
++		mem->free = item->user_hash.key;
++		mem->size = mem->size << MALI_MM_ALIGN_SHIFT;
++	} else {
++		mem->offset = 0;
++		mem->size = 0;
++		mem->free = 0;
++		retval = -ENOMEM;
++	}
++
++	DRM_DEBUG("alloc %d, size = %d, offset = %d\n", pool, mem->size, mem->offset);
++
++	return retval;
++}
++
++static int mali_drm_free(struct drm_device *dev, void *data, struct drm_file *file_priv)
++{
++	drm_mali_private_t *dev_priv = dev->dev_private;
++	drm_mali_mem_t *mem = data;
++	int ret;
++	printk(KERN_ERR "DRM: %s\n", __func__);
++
++	mutex_lock(&dev->struct_mutex);
++	ret = drm_sman_free_key(&dev_priv->sman, mem->free);
++	mutex_unlock(&dev->struct_mutex);
++	DRM_DEBUG("free = 0x%lx\n", mem->free);
++
++	return ret;
++}
++
++static int mali_fb_alloc(struct drm_device *dev, void *data, struct drm_file *file_priv)
++{
++	printk(KERN_ERR "DRM: %s\n", __func__);
++	return mali_drm_alloc(dev, file_priv, data, VIDEO_TYPE);
++}
++
++static int mali_ioctl_mem_init(struct drm_device *dev, void *data, struct drm_file *file_priv)
++{
++	drm_mali_private_t *dev_priv = dev->dev_private;
++	drm_mali_mem_t *mem= data;
++	int ret;
++	dev_priv = dev->dev_private;
++	printk(KERN_ERR "DRM: %s\n", __func__);
++
++	mutex_lock(&dev->struct_mutex);
++	ret = drm_sman_set_range(&dev_priv->sman, MEM_TYPE, 0, mem->size >> MALI_MM_ALIGN_SHIFT);
++
++	if (ret) {
++		DRM_ERROR("MEM memory manager initialisation error\n");
++		mutex_unlock(&dev->struct_mutex);
++		return ret;
++	}
++
++	//dev_priv->agp_initialized = 1;
++	//dev_priv->agp_offset = agp->offset;
++	mutex_unlock(&dev->struct_mutex);
++
++	//DRM_DEBUG("offset = %u, size = %u\n", agp->offset, agp->size);
++	return 0;
++}
++
++static int mali_ioctl_mem_alloc(struct drm_device *dev, void *data,
++			       struct drm_file *file_priv)
++{
++
++	printk(KERN_ERR "DRM: %s\n", __func__);
++	return mali_drm_alloc(dev, file_priv, data, MEM_TYPE);
++}
++
++static drm_local_map_t *mem_reg_init(struct drm_device *dev)
++{
++	struct drm_map_list *entry;
++	drm_local_map_t *map;
++	printk(KERN_ERR "DRM: %s\n", __func__);
++
++	list_for_each_entry(entry, &dev->maplist, head) {
++		map = entry->map;
++		if (!map)
++			continue;
++		if (map->type == _DRM_REGISTERS) {
++			return map;
++		}
++	}
++	return NULL;
++}
++
++int mali_idle(struct drm_device *dev)
++{
++	drm_mali_private_t *dev_priv = dev->dev_private;
++	uint32_t idle_reg;
++	unsigned long end;
++	int i;
++	printk(KERN_ERR "DRM: %s\n", __func__);
++
++	if (dev_priv->idle_fault)
++		return 0;
++
++	#if 0
++	if (dev_priv->mmio == NULL) {
++		dev_priv->mmio = mali_reg_init(dev);
++		if (dev_priv->mmio == NULL) {
++			DRM_ERROR("Could not find register map.\n");
++			return 0;
++		}
++	}
++	#endif
++
++	return 0;
++}
++
++void mali_lastclose(struct drm_device *dev)
++{
++	drm_mali_private_t *dev_priv = dev->dev_private;
++	printk(KERN_ERR "DRM: %s\n", __func__);
++
++	if (!dev_priv) return;
++
++	mutex_lock(&dev->struct_mutex);
++	drm_sman_cleanup(&dev_priv->sman);
++	dev_priv->vram_initialized = 0;
++	dev_priv->mmio = NULL;
++	mutex_unlock(&dev->struct_mutex);
++}
++
++void mali_reclaim_buffers_locked(struct drm_device * dev, struct drm_file *file_priv)
++{
++	drm_mali_private_t *dev_priv = dev->dev_private;
++	printk(KERN_ERR "DRM: %s\n", __func__);
++
++	mutex_lock(&dev->struct_mutex);
++	if (drm_sman_owner_clean(&dev_priv->sman, (unsigned long)file_priv)) 
++	{
++		mutex_unlock(&dev->struct_mutex);
++		return;
++	}
++
++	if (dev->driver->dma_quiescent) 
++	{
++		dev->driver->dma_quiescent(dev);
++	}
++
++	drm_sman_owner_cleanup(&dev_priv->sman, (unsigned long)file_priv);
++	mutex_unlock(&dev->struct_mutex);
++	return;
++}
++
++struct drm_ioctl_desc mali_ioctls[] = {
++	DRM_IOCTL_DEF(DRM_MALI_FB_ALLOC, mali_fb_alloc, DRM_AUTH),
++	DRM_IOCTL_DEF(DRM_MALI_FB_FREE, mali_drm_free, DRM_AUTH),
++	DRM_IOCTL_DEF(DRM_MALI_MEM_INIT, mali_ioctl_mem_init, DRM_AUTH | DRM_MASTER | DRM_ROOT_ONLY),
++	DRM_IOCTL_DEF(DRM_MALI_MEM_ALLOC, mali_ioctl_mem_alloc, DRM_AUTH),
++	DRM_IOCTL_DEF(DRM_MALI_MEM_FREE, mali_drm_free, DRM_AUTH),
++	DRM_IOCTL_DEF(DRM_MALI_FB_INIT, mali_fb_init, DRM_AUTH | DRM_MASTER | DRM_ROOT_ONLY),
++};
++
++int mali_max_ioctl = DRM_ARRAY_SIZE(mali_ioctls);

@@ -675,29 +675,17 @@
   prepare_sysroot() {
     progress "Preparing system"
 
-    if [ "$SYSTEM_TORAM" = "no" -o "$INSTALLED_MEMORY" -lt "$SYSTEM_TORAM_LIMIT" ]; then
-      mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
-    else
-      cp /flash/$IMAGE_SYSTEM /dev/$IMAGE_SYSTEM
-      mount_part "/dev/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
-    fi
+#    if [ "$SYSTEM_TORAM" = "no" -o "$INSTALLED_MEMORY" -lt "$SYSTEM_TORAM_LIMIT" ]; then
+#      mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
+#    else
+#      cp /flash/$IMAGE_SYSTEM /dev/$IMAGE_SYSTEM
+#      mount_part "/dev/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
+#    fi
 
+    mount -t ext4 /dev/mmcblk0p3 /sysroot
     mount --move /flash /sysroot/flash
     mount --move /storage /sysroot/storage
 
-    if [ ! -d "/sysroot/lib/modules/$(uname -r)/" -a -f "/sysroot/usr/lib/systemd/systemd" ]; then
-      echo ""
-      echo "NEVER TOUCH boot= in extlinux.conf / cmdline.txt"
-      echo "if you dont know what you are doing"
-      echo ""
-      echo "your installation is now broken"
-      echo ""
-      echo "normal boot in 60s..."
-      usleep 60000000
-    fi
-
-
-    [ -f "/sysroot/usr/lib/systemd/systemd" ] || error "final_check" "Could not find system."
   }
 
   if [ "${boot%%=*}" = "FILE" ]; then
@@ -760,6 +748,6 @@
     INIT_UNIT="--unit=factory-reset.target"
   fi
   # switch to new sysroot and start real init
-  exec /bin/busybox switch_root /sysroot /usr/lib/systemd/systemd $INIT_ARGS $INIT_UNIT
+  exec /bin/busybox switch_root /sysroot /sbin/init
 
   error "switch_root" "Error in initramfs. Could not switch to new root"
