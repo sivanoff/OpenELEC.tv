@@ -250,7 +250,7 @@ fi
     DTB_BLOBS_COUNT="${#DTB_BLOBS[@]}"
     if [ "$DTB_BLOBS_COUNT" -gt 1 ]; then
       $ROOT/tools/dtbTool/dtbTool -o arch/$TARGET_KERNEL_ARCH/boot/dtb.img -p scripts/dtc/ arch/$TARGET_KERNEL_ARCH/boot/dts/amlogic/
-      MKBOOTIMG_SECOND="--second arch/$KERNEL_ARCH/boot/dtb.img"
+      MKBOOTIMG_SECOND="--second arch/$TARGET_KERNEL_ARCH/boot/dtb.img"
     elif [ "$DTB_BLOBS_COUNT" -eq 1 ]; then
       MKBOOTIMG_SECOND="--second $DTB_BLOBS"
     else
