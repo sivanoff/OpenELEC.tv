@@ -243,10 +243,10 @@ fi
     echo "Building Amlogic DeviceTreeBlobs and injecting them to kernel..."
     pushd "$BUILD/linux-$(kernel_version)" > /dev/null
     rm -rf arch/$TARGET_KERNEL_ARCH/boot/dts/amlogic/*.dtb arch/$TARGET_KERNEL_ARCH/boot/dtb.img arch/$TARGET_KERNEL_ARCH/boot/boot.img
-    for extra_target in "$KERNEL_UBOOT_EXTRA_TARGET"; do
+    for extra_target in $KERNEL_UBOOT_EXTRA_TARGET; do
       LDFLAGS="" make $extra_target > /dev/null
     done
-    DTB_BLOBS=(arch/$TARGET_KERNEL_ARCH/boot/dts/amlogic/*.dtb)
+    DTB_BLOBS=($(ls arch/$TARGET_KERNEL_ARCH/boot/dts/amlogic/*.dtb 2>/dev/null || true))
     DTB_BLOBS_COUNT="${#DTB_BLOBS[@]}"
     if [ "$DTB_BLOBS_COUNT" -gt 1 ]; then
       $ROOT/tools/dtbTool/dtbTool -o arch/$TARGET_KERNEL_ARCH/boot/dtb.img -p scripts/dtc/ arch/$TARGET_KERNEL_ARCH/boot/dts/amlogic/
