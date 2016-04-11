@@ -1,9 +1,9 @@
 diff --git a/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd b/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd
 new file mode 100644
-index 0000000..0c2ac14
+index 0000000..db32d41
 --- /dev/null
 +++ b/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd
-@@ -0,0 +1,2010 @@
+@@ -0,0 +1,2019 @@
 +/dts-v1/;
 +/// ***************************************************************************************\n
 +//$$ PROJECT="meson8b"
@@ -2013,4 +2013,13 @@ index 0000000..0c2ac14
 +                clock-names = "stmmaceth";
 +        };
 +
++/// ***************************************************************************************
++///	-	RNG
++//$$ MODULE="RNG"
++//$$ DEVICE="meson-rng"
++//$$ L2 PROP_STR = "status"
++	meson-rng{
++		compatible = "amlogic,meson-rng";
++		status = "ok";
++	};
 +}; /* end of / */
