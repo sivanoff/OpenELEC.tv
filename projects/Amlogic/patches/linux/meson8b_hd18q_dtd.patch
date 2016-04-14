@@ -1,16 +1,16 @@
-diff --git a/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd b/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd
+diff --git a/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd b/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd
 new file mode 100644
-index 0000000..0c2ac14
+index 0000000..22e5cd8
 --- /dev/null
-+++ b/arch/arm/boot/dts/amlogic/meson8b_m201C_1G.dtd
-@@ -0,0 +1,2010 @@
++++ b/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd
+@@ -0,0 +1,2116 @@
 +/dts-v1/;
 +/// ***************************************************************************************\n
 +//$$ PROJECT="meson8b"
 +//$$ REMOVE 1
 +void root_func(){
 +//$$ ADD /{
-+	amlogic-dt-id = "m8b_m201C_1G";
++	amlogic-dt-id = "m8b_m201_1G";
 +	compatible = "AMLOGIC,8726_M8B";
 +	model = "AMLOGIC";
 +	interrupt-parent = <&gic>;
@@ -328,7 +328,6 @@ index 0000000..0c2ac14
 +//$$ L2 PROP_STR = "status"
 +    rtc{
 +		compatible = "amlogic,aml_rtc";
-+		sec_adjust = <1735>;
 +		status = "okay";
 +	};
 +
@@ -344,8 +343,8 @@ index 0000000..0c2ac14
 +		port_name = "uart_ao";
 +		status = "okay";
 +		dev_name = "uart_ao";
-+//		pinctrl-names = "default";
-+//		pinctrl-0 = <&ao_uart_pins>;
++	//	pinctrl-names = "default";
++	//	pinctrl-0 = <&ao_uart_pins>;
 +	};
 +
 +//$$ DEVICE="uart_0"
@@ -419,7 +418,7 @@ index 0000000..0c2ac14
 +		irq_trigger_type = "GPIO_IRQ_HIGH";
 +		power_on_pin = "GPIOAO_6";
 +		power_on_pin2 = "GPIOX_11";
-+		//clock_32k_pin = "GPIOX_10";
++		clock_32k_pin = "GPIOX_10";
 +	};
 +
 +//$$ DEVICE="wifi_power"
@@ -431,7 +430,6 @@ index 0000000..0c2ac14
 +            status = "okay";
 +            power_gpio = "GPIOAO_6";
 +            power_gpio2 = "GPIOX_11";
-+	    valid = "high";
 +	};
 +
 +/// ***************************************************************************************
@@ -564,6 +562,7 @@ index 0000000..0c2ac14
 +    sdhc{
 +        compatible = "amlogic,aml_sdhc";
 +        dev_name = "aml_sdhc.0";
++        status = "okay";
 +        reg = <0xc1108e00 0x3c>;
 +        pinctrl-names = "sdhc_sd_clk_cmd_pins", "sdhc_sd_all_pins", "sdhc_emmc_clk_cmd_pins", "sdhc_emmc_all_pins", "sdhc_sdio_clk_cmd_pins", "sdhc_sdio_all_pins";
 +        pinctrl-0 = <&sdhc_sd_clk_cmd_pins>;
@@ -625,11 +624,11 @@ index 0000000..0c2ac14
 +            status = "okay";
 +            port = <5>;          /**0:sdio_a, 1:sdio_b, 2:sdio_c, 3:sdhc_a, 4:sdhc_b, 5:sdhc_c */
 +            pinname = "emmc";
-+            ocr_avail = <0x00200080>; // 3.3:0x200000, 1.8+3.3:0x00200080
++            ocr_avail = <0x200000>;          /**VDD voltage 3.3 ~ 3.4 */
 +            caps = "MMC_CAP_8_BIT_DATA","MMC_CAP_MMC_HIGHSPEED","MMC_CAP_SD_HIGHSPEED", "MMC_CAP_NONREMOVABLE","MMC_CAP_ERASE", "MMC_CAP_HW_RESET"; // MMC_CAP_NEEDS_POLL -- for detect, MMC_CAP_NONREMOVABLE -- for eMMC/TSD
-+            caps2 = "MMC_CAP2_HS200_1_8V_SDR";
-+            f_min = <300000>;
-+            f_max = <100000000>;
++            //caps2 = "MMC_CAP2_HS200_1_8V_SDR";
++	        f_min = <300000>;
++            f_max = <50000000>;
 +            max_req_size = <0x20000>;          /**128KB*/
 +            gpio_dat3 = "BOOT_3";
 +            card_type = <1>; /* 0:unknown, 1:mmc card(include eMMC), 2:sd card(include tSD), 3:sdio device(ie:sdio-wifi), 4:SD combo (IO+mem) card, 5:NON sdio device(means sd/mmc card), other:reserved */
@@ -645,17 +644,17 @@ index 0000000..0c2ac14
 +//$$ L3 PROP_U32 = "f_max"
 +//$$ L3 PROP_U32 = "max_req_size"
 +//$$ L2 PROP_U32 = "card_type"
-+	     sdio{
-+             status = "okay";
-+             port = <3>;          /**0:sdio_a, 1:sdio_b, 2:sdio_c, 3:sdhc_a, 4:sdhc_b, 5:sdhc_c */
-+             pinname = "sdio";
-+             ocr_avail = <0x00200080>; // 3.3:0x200000, 1.8+3.3:0x00200080
-+             caps = "MMC_CAP_4_BIT_DATA","MMC_CAP_MMC_HIGHSPEED","MMC_CAP_SD_HIGHSPEED", "MMC_CAP_NONREMOVABLE", "MMC_CAP_UHS_SDR12","MMC_CAP_UHS_SDR25","MMC_CAP_UHS_SDR50","MMC_CAP_UHS_SDR104";
-+             f_min = <300000>;
-+             f_max = <100000000>;
-+             max_req_size = <0x20000>;          /**128KB*/
-+             card_type = <3>; /* 0:unknown, 1:mmc card(include eMMC), 2:sd card(include tSD), 3:sdio device(ie:sdio-wifi), 4:SD combo (IO+mem) card, 5:NON sdio device(means sd/mmc card), other:reserved */
-+         };
++        // sdio{
++        //     status = "okay";
++        //     port = <3>;          /**0:sdio_a, 1:sdio_b, 2:sdio_c, 3:sdhc_a, 4:sdhc_b, 5:sdhc_c */
++        //     pinname = "sdio";
++        //     ocr_avail = <0x00200080>; // 3.3:0x200000, 1.8+3.3:0x00200080
++        //     caps = "MMC_CAP_4_BIT_DATA","MMC_CAP_MMC_HIGHSPEED","MMC_CAP_SD_HIGHSPEED", "MMC_CAP_NONREMOVABLE", "MMC_CAP_UHS_SDR12","MMC_CAP_UHS_SDR25","MMC_CAP_UHS_SDR50","MMC_CAP_UHS_SDR104";
++        //     f_min = <300000>;
++        //     f_max = <100000000>;
++        //     max_req_size = <0x20000>;          /**128KB*/
++        //     card_type = <3>; /* 0:unknown, 1:mmc card(include eMMC), 2:sd card(include tSD), 3:sdio device(ie:sdio-wifi), 4:SD combo (IO+mem) card, 5:NON sdio device(means sd/mmc card), other:reserved */
++        // };
 +    };
 +
 +
@@ -699,7 +698,7 @@ index 0000000..0c2ac14
 +//		use_pio = <0>;
 +//		master_i2c_speed = <300000>;
 +//	};
-+
++	
 +//$$ DEVICE="I2C_B"
 +//$$ L2 PROP_STR = "status"
 +//$$ L3 PROP_U32 2="reg"
@@ -749,7 +748,7 @@ index 0000000..0c2ac14
 +		reg = <0xc1108d20 0x20>;
 +		device_id = <4>;
 +		pinctrl-names="default";
-+//		pinctrl-0=<&d_i2c_master>;
++		pinctrl-0=<&d_i2c_master>;
 +		#address-cells = <1>;
 +		#size-cells = <0>;
 +		use_pio = <0>;
@@ -779,7 +778,7 @@ index 0000000..0c2ac14
 +            dvfs_table  = <
 +            /* NOTE: frequent in this table must be ascending order */
 +            /* frequent(Khz)    min_uV      max_uV                  */
-+                /*  96000         860000      860000
++                  96000         860000      860000
 +                 192000         860000      860000
 +                 312000         860000      860000
 +                 408000         860000      860000
@@ -791,19 +790,6 @@ index 0000000..0c2ac14
 +                1200000         970000      970000
 +                1320000        1100000     1100000
 +                1488000        1100000     1100000
-+                1536000        1140000     1140000*/
-+		96000          900000      900000
-+                 192000         900000      900000
-+                 312000         900000      900000
-+                 408000         900000      900000
-+                 504000         900000      900000
-+                 600000         900000      900000
-+                 720000         900000      900000
-+                 816000         950000      950000
-+                1008000         970000      970000
-+                1200000        1030000     1030000
-+                1320000        1120000     1120000
-+                1488000        1130000     1130000
 +                1536000        1140000     1140000
 +            >;
 +        };
@@ -930,14 +916,31 @@ index 0000000..0c2ac14
 +			port-speed = <0>; /** 0: default, high, 1: full */
 +			port-config = <0>; /** 0: default */
 +			port-dma = <0>; /** 0: default, 1: single, 2: incr, 3: incr4, 4: incr8, 5: incr16, 6: disable*/
-+			port-id-mode = <0>; /** 0: hardware, 1: sw_host, 2: sw_slave*/
++			port-id-mode = <1>; /** 0: hardware, 1: sw_host, 2: sw_slave*/
++			host-only-core = <1>;
++			pmu-apply-power = <1>;
 +//			gpio-vbus-power = "GPIOZ_1";
 +			gpio-work-mask	= <1>; /**0: work on pulldown,1:work on pullup*/
 +			status = "okay";
 +		};
 +	};
 +
-+
++/// ***************************************************************************************
++///	-	Led
++//$$ MODULE="Led"
++//$$ DEVICE="led"
++//$$ L2 PROP_STR = "status"
++//$$ L2 PROP_U32 = "board_type"
++//    led{
++//		compatible = "amlogic-led";
++//		dev_name = "aml-setio";
++//		status = "okay";
++//		red_led_gpio = "GPIOAO_13";/** if your board just need one gpio,please config red_led_gpio and blue_led_gpio the same */
++//		blue_led_gpio = "GPIOAO_2";/**  */
++//		red_led_mode = <1>; /** 1:H on L off , 0:H off L on */
++//		blue_led_mode= <1>; /** 1:H on L off , 0:H off L on */
++//		board_type = <1>;/** k200(0) GPOAO_14 H BLUE L RED; m201(1): GPOAO_2 blue led , GPIOAO_13 red led ,H on, L off */
++//	};
 +
 +
 +/// ***************************************************************************************
@@ -1301,8 +1304,8 @@ index 0000000..0c2ac14
 +		status = "ok";
 +		reg = <0xd0048600 0x24>;
 +		pinctrl-names = "nand_rb_mod","nand_norb_mod";
-+		pinctrl-0 = <&nand_input_state &conf_nand_state &nand_base>;
-+		pinctrl-1 = <&nand_input_state &conf_nand_state &nand_base>;
++		pinctrl-0 = <&nand_input_state &conf_nand_state &conf_nand_state1 &nand_base>;
++		pinctrl-1 = <&nand_input_state &conf_nand_state &conf_nand_state1 &nand_base>;
 +		device_id = <0>;
 +		plat-names = "nandnormal";
 +		plat-num = <1>;
@@ -1427,7 +1430,7 @@ index 0000000..0c2ac14
 +		keysn_1:key_1{
 +			key-name = "mac";
 +			key-device = "nandkey";
-+			key-dataformat = "hexdata";
++			key-dataformat = "allascii";
 +			key-permit = "read","write","del";
 +		};
 +
@@ -1549,6 +1552,17 @@ index 0000000..0c2ac14
 +        status = "okay";
 +    };
 +
++	amlogic-watchdog{
++		compatible = "amlogic,aml-wdt";
++		status = "disable";
++		default_timeout=<10>;
++		reset_watchdog_method=<1>;//0:sysfs,1:kernel
++		reset_watchdog_time=<2>;
++		shutdown_timeout=<10>;
++		firmware_timeout=<6>;
++		suspend_timeout=<6>;
++	};
++
 +    aml_aes{
 +       compatible = "amlogic,aes";
 +       dev_name = "aml_aes";
@@ -1581,11 +1595,11 @@ index 0000000..0c2ac14
 +//$$ MATCH "uart_ao_pin_match" = "&ao_uart_pins"
 +//$$ L2 PROP_U32 2 = "amlogic,setmask"
 +//$$ L2 PROP_STR 2 = "amlogic,pins"
-+//        ao_uart_pins:ao_uart{
++ //       ao_uart_pins:ao_uart{
 +//			amlogic,setmask=<10 0x1800>;
 +//			amlogic,pins="GPIOAO_0", "GPIOAO_1";
 +//		};
-+
++		
 +//$$ MATCH "uart_0_pin_match" = "&a_uart_pins"
 +//$$ L2 PROP_U32 2 = "amlogic,setmask"
 +//$$ L2 PROP_STR 4 = "amlogic,pins"
@@ -1622,8 +1636,13 @@ index 0000000..0c2ac14
 +			amlogic,pins = "BOOT_0","BOOT_1","BOOT_2","BOOT_3","BOOT_4",
 +						"BOOT_5","BOOT_6","BOOT_7","BOOT_15";
 +			amlogic,pullup=<0>;
++			amlogic,pullupen=<1>;
 +		};
-+
++		conf_nand_state1: conf_nand1{
++			amlogic,pins = "BOOT_8", "BOOT_10";
++			amlogic,pullup=<1>;
++			amlogic,pullupen=<1>;
++		};
 +//$$ MATCH "Nand_pin_0_match" = "&nand_base"
 +//$$ MATCH "Nand_pin_1_match" = "&nand_base"
 +//$$ L2 PROP_U32 2 = "amlogic,setmask"
@@ -1933,13 +1952,13 @@ index 0000000..0c2ac14
 +//$$ L2 PROP_U32 2 = "amlogic,setmask"
 +//$$ L2 PROP_U32 6 = "amlogic,clrmask"
 +//$$ L2 PROP_STR 2 = "amlogic,pins"
-+		a_i2c_master:a_i2c{
-+			amlogic,setmask=<9 0xC0000000>;
-+			amlogic,clrmask=<0 0x3C0300
-+			                 6 0xC00000
-+			                 8 0x1800000>;
-+			amlogic,pins="GPIODV_24","GPIODV_25";
-+		};
++//		a_i2c_master:a_i2c{
++//			amlogic,setmask=<9 0xC0000000>;
++//			amlogic,clrmask=<0 0x3C0300 
++//			                 6 0xC00000
++//			                 8 0x1800000>;
++//			amlogic,pins="GPIODV_24","GPIODV_25";
++//		};
 +
 +//$$ MATCH "I2C_B_pin_match" = "&b_i2c_master"
 +//$$ L2 PROP_U32 2 = "amlogic,setmask"
@@ -1986,7 +2005,7 @@ index 0000000..0c2ac14
 +//$$ L2 PROP_STR 4 = "amlogic,pins"
 +		aml_spi_nor_pins: aml_spi_nor_pins{
 +			amlogic,setmask=<5 0xf>;
-+			amlogic,clrmask=<2 0x380000>;
++			amlogic,clrmask=<2 0x10380000>;
 +			amlogic,pins = "BOOT_11","BOOT_12","BOOT_13","BOOT_18";
 +		};
 +//$$ MATCH "meson_vcck_dvfs_pin_0_match" = "&aml_pwm_pins"
@@ -1998,6 +2017,27 @@ index 0000000..0c2ac14
 +			amlogic,clrmask=<0 0x48
 +					 7 0x10000020>;
 +			amlogic,pins="GPIODV_9";
++		};
++
++//$$ MATCH "dvb_p_ts0_pins_match" = "&dvb_p_ts0_pins"
++//$$ L2 PROP_U32 1 = "amlogic,setmask"
++//$$ L2 PROP_U32 2 = "amlogic,clrmask"
++//$$ L2 PROP_STR 11 = "amlogic,pins"
++		dvb_p_ts0_pins: dvb_p_ts0_pins {
++			amlogic,setmask = <3 0x37>;
++			amlogic,clrmask = <5 0xC0
++								9 0x37C>;
++			amlogic,pins = "GPIOY_9","GPIOY_10","GPIOY_11","GPIOY_12","GPIOY_13","GPIOY_14","GPIOY_6","GPIOY_7","GPIOY_0","GPIOY_1","GPIOY_8";
++		};
++
++//$$ MATCH "dvb_s_ts0_pins_match" = "&dvb_s_ts0_pins"
++//$$ L2 PROP_U32 1 = "amlogic,setmask"
++//$$ L2 PROP_U32 1 = "amlogic,clrmask"
++//$$ L2 PROP_STR 4 = "amlogic,pins"
++		dvb_s_ts0_pins: dvb_s_ts0_pins {
++			amlogic,setmask = <3 0x17>;
++			amlogic,clrmask = <9 0x378>;
++			amlogic,pins = "GPIOY_9","GPIOY_0","GPIOY_1","GPIOY_8";
 +		};
 +
 +	};
@@ -2012,5 +2052,71 @@ index 0000000..0c2ac14
 +                clocks = "clk81";
 +                clock-names = "stmmaceth";
 +        };
++
++/// ***************************************************************************************
++///	-	RNG
++//$$ MODULE="RNG"
++//$$ DEVICE="meson-rng"
++//$$ L2 PROP_STR = "status"
++	meson-rng{
++		compatible = "amlogic,meson-rng";
++		status = "ok";
++	};
++///	-	DVB
++//$$ MODULE="DVB"
++
++//$$ DEVICE="dvb"
++//$$ L2 PROP_STR = "ts0"
++//$$ L2 PROP_U32 = "ts0_invert"
++//$$ L2 PROP_U32 = "ts0_control"
++//$$ L2 PROP_STR 6 = "pinctrl-names"
++//$$ L2 PROP_CHOICE "dvb_p_ts0_pins_match" = "pinctrl-0"
++//$$ L2 PROP_CHOICE "dvb_s_ts0_pins_match" = "pinctrl-1"
++	dvb{
++		compatible = "amlogic,dvb";
++		/*"parallel","serial","disable"*/
++		ts0 = "parallel";
++		ts0_control = <0>;
++		ts0_invert = <0>;
++		pinctrl-names = "p_ts0", "s_ts0";
++		pinctrl-0 = <&dvb_p_ts0_pins>;
++		pinctrl-1 = <&dvb_s_ts0_pins>;
++	};
++
++//$$ DEVICE="dvbfe"
++//$$ L2 PROP_STR = "dtv_demod0"
++//$$ L2 PROP_U32 = "dtv_demod0_i2c_adap_id"
++//$$ L2 PROP_U32 = "dtv_demod0_i2c_addr"
++//$$ L2 PROP_U32 = "dtv_demod0_reset_value"
++//$$ L2 PROP_STR = "dtv_demod0_reset_gpio"
++//$$ L2 PROP_U32 = "fe0_dtv_demod"
++//$$ L2 PROP_U32 = "fe0_ts"
++//$$ L2 PROP_U32 = "fe0_dev"
++//$$ L2 PROP_STR 6 = "pinctrl-names"
++//$$ L2 PROP_CHOICE "dvb_fe_pins_match" = "pinctrl-0"
++	dvbfe{
++		compatible = "amlogic,dvbfe";
++		dtv_demod0 = "Si2168";
++		dtv_demod0_i2c_adap_id = <4>;
++		dtv_demod0_i2c_addr = <0x64>;
++		dtv_demod0_reset_value = <0>;
++		dtv_demod0_reset_gpio = "GPIOY_3";
++		fe0_dtv_demod = <0>;
++		fe0_ts = <0>;
++		fe0_dev = <0>;
++	};
++
++/*	dvbfe{
++		compatible = "amlogic,dvbfe";
++		dtv_demod0 = "Mxl101";
++		dtv_demod0_i2c_adap_id = <4>;
++		dtv_demod0_i2c_addr = <0x60>;
++		dtv_demod0_reset_value = <0>;
++		dtv_demod0_reset_gpio = "GPIOY_3";
++		fe0_dtv_demod = <0>;
++		fe0_ts = <0>;
++		fe0_dev = <0>;
++	};
++*/
 +
 +}; /* end of / */
