@@ -1,9 +1,9 @@
 diff --git a/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd b/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd
 new file mode 100644
-index 0000000..22e5cd8
+index 0000000..ac9fded
 --- /dev/null
 +++ b/arch/arm/boot/dts/amlogic/meson8b_hd18q.dtd
-@@ -0,0 +1,2116 @@
+@@ -0,0 +1,2105 @@
 +/dts-v1/;
 +/// ***************************************************************************************\n
 +//$$ PROJECT="meson8b"
@@ -1551,17 +1551,6 @@ index 0000000..22e5cd8
 +        syspll_fixed;
 +        status = "okay";
 +    };
-+
-+	amlogic-watchdog{
-+		compatible = "amlogic,aml-wdt";
-+		status = "disable";
-+		default_timeout=<10>;
-+		reset_watchdog_method=<1>;//0:sysfs,1:kernel
-+		reset_watchdog_time=<2>;
-+		shutdown_timeout=<10>;
-+		firmware_timeout=<6>;
-+		suspend_timeout=<6>;
-+	};
 +
 +    aml_aes{
 +       compatible = "amlogic,aes";
