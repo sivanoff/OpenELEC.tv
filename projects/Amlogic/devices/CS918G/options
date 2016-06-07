@@ -1,0 +1,5 @@
+# Kernel extra targets to build
+  KERNEL_UBOOT_EXTRA_TARGET="meson8b_cs918g.dtd meson8b_cs918g.dtb"
+
+# Build Android kernel image using mkbootimg
+  BUILD_ANDROID_BOOTIMG="yes"
