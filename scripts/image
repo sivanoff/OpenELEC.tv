@@ -217,6 +217,12 @@ fi
 # copy board related files to filesystem
   if [ -n "$DEVICE" -a -d "$PROJECT_DIR/$PROJECT/devices/$DEVICE/filesystem" ]; then
     cp -LR $PROJECT_DIR/$PROJECT/devices/$DEVICE/filesystem/* $INSTALL
+    # install device specific systemd services
+    for service in $PROJECT_DIR/$PROJECT/devices/$DEVICE/filesystem/usr/lib/systemd/system/*.service ; do
+      if [ -f "$service" ] ; then
+        enable_service $(basename $service)
+      fi
+    done
   fi
 
 # run depmod
@@ -243,14 +249,14 @@ fi
     echo "Building Amlogic DeviceTreeBlobs and injecting them to kernel..."
     pushd "$BUILD/linux-$(kernel_version)" > /dev/null
     rm -rf arch/$TARGET_KERNEL_ARCH/boot/dts/amlogic/*.dtb arch/$TARGET_KERNEL_ARCH/boot/dtb.img arch/$TARGET_KERNEL_ARCH/boot/boot.img
-    for extra_target in "$KERNEL_UBOOT_EXTRA_TARGET"; do
+    for extra_target in $KERNEL_UBOOT_EXTRA_TARGET; do
       LDFLAGS="" make $extra_target > /dev/null
     done
-    DTB_BLOBS=(arch/$TARGET_KERNEL_ARCH/boot/dts/amlogic/*.dtb)
+    DTB_BLOBS=($(ls arch/$TARGET_KERNEL_ARCH/boot/dts/amlogic/*.dtb 2>/dev/null || true))
     DTB_BLOBS_COUNT="${#DTB_BLOBS[@]}"
     if [ "$DTB_BLOBS_COUNT" -gt 1 ]; then
       $ROOT/tools/dtbTool/dtbTool -o arch/$TARGET_KERNEL_ARCH/boot/dtb.img -p scripts/dtc/ arch/$TARGET_KERNEL_ARCH/boot/dts/amlogic/
-      MKBOOTIMG_SECOND="--second arch/$KERNEL_ARCH/boot/dtb.img"
+      MKBOOTIMG_SECOND="--second arch/$TARGET_KERNEL_ARCH/boot/dtb.img"
     elif [ "$DTB_BLOBS_COUNT" -eq 1 ]; then
       MKBOOTIMG_SECOND="--second $DTB_BLOBS"
     else
@@ -382,7 +388,7 @@ fi
       tar cf $TARGET_IMG/$IMAGE_NAME.tar -C target $IMAGE_NAME
 
     # create image files if requested
-      if [ "$1" = "mkimage" -a -n "$BOOTLOADER" ]; then
+      if [ "$1" = "mkimage" -o "$1" = "amlpkg" -a -n "$BOOTLOADER" ]; then
         # projects can set KERNEL_NAME (kernel.img)
         if [ -z "$KERNEL_NAME" ] ; then
           KERNEL_NAME="KERNEL"
@@ -447,21 +453,21 @@ fi
         java -Xmx1024m -jar $SIGNAPK_DIR/signapk.jar -w $SIGNAPK_DIR/testkey.x509.pem $SIGNAPK_DIR/testkey.pk8 update.zip sign/$IMAGE_NAME-update.zip
 
         # create the auto-install package
+        echo "Creating Amlogic ZIP auto-install package"
+        pushd sign > /dev/null
+        echo --update_package=/sdcard/$IMAGE_NAME-update.zip > factory_update_param.aml
+        echo --wipe_data >> factory_update_param.aml
+        echo --wipe_cache >> factory_update_param.aml
         if [ -f "$INSTALL_SRC_DIR/files/recovery.img" ]; then
-          echo "Creating Amlogic ZIP auto-install package"
-          pushd sign > /dev/null
-          echo --update_package=/sdcard/$IMAGE_NAME-update.zip > factory_update_param.aml
-          echo --wipe_data >> factory_update_param.aml
-          echo --wipe_cache >> factory_update_param.aml
           cp $INSTALL_SRC_DIR/files/recovery.img .
-          if [ -f $INSTALL_SRC_DIR/files/aml_autoscript ]; then
-            cp $INSTALL_SRC_DIR/files/aml_autoscript .
-          elif [ -f "$INSTALL_SRC_DIR/aml_autoscript.src" ]; then
-            $MKIMAGE_TOOL_CMD "$INSTALL_SRC_DIR/aml_autoscript.src" aml_autoscript > /dev/null
-          fi
-          zip -q $TARGET_IMG/$IMAGE_NAME.zip *
-          popd > /dev/null
         fi
+        if [ -f $INSTALL_SRC_DIR/files/aml_autoscript ]; then
+          cp $INSTALL_SRC_DIR/files/aml_autoscript .
+        elif [ -f "$INSTALL_SRC_DIR/aml_autoscript.src" ]; then
+          $MKIMAGE_TOOL_CMD "$INSTALL_SRC_DIR/aml_autoscript.src" aml_autoscript > /dev/null
+        fi
+        zip -q $TARGET_IMG/$IMAGE_NAME.zip *
+        popd > /dev/null
 
         # copy update package to target directory
         cp sign/$IMAGE_NAME-update.zip $TARGET_IMG
